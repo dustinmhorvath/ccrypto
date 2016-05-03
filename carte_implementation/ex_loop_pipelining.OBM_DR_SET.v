@@ -1,0 +1,36 @@
+`ifdef OBM_DR_SET_defined
+`else
+`define USE_TOMS_CONTROL
+`define SRC7_ALTERA
+`define CHIP_1
+`define MAP_M
+`define WRITES_OBM_A
+`define USES_DMA_IB_0
+`define WRITES_OBM_B
+`define USES_DMA_IB_1
+`define WRITES_OBM_C
+`define USES_DMA_IB_2
+`define READS_OBM_A
+`define READS_OBM_B
+`define WRITES_OBM_D
+`define READS_OBM_C
+`define READS_OBM_D
+`define USES_DMA_OB_0
+`define USES_VLM0
+`define USES_VLM1
+`define DR_20_REFERENCED
+`define DR_21_REFERENCED
+`define DR_22_REFERENCED
+`define DR_23_REFERENCED
+`define DR_24_REFERENCED
+`define DR_25_REFERENCED
+`define DR_42_REFERENCED
+`define DR_43_REFERENCED
+`define DR_44_REFERENCED
+`define DR_45_REFERENCED
+`define DR_46_REFERENCED
+`define DR_47_REFERENCED
+`define DR_49_REFERENCED
+`define DR_4a_REFERENCED
+`define OBM_DR_SET_defined
+`endif

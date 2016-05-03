@@ -1,0 +1,31 @@
+started '/opt/srcci/carte54/bin/mcc' on Mon Apr 25 12:03:30 2016 with args:
+    -log
+    -macropath
+    /opt/srcci/carte54/lib/macros
+    -srcinfopath
+    /opt/srcci/carte54/lib/macros/map_m/carte.info:/opt/srcci/carte54/lib/macros/map_m/src_ieee_v1.info
+    -maptarget
+    map_m
+    -DCARTE_EX_MODE_DBG
+    -I
+    .
+    -I
+    /opt/srcci/carte54/include
+    -I
+    /opt/srcci/carte54/include/src7
+    -user_debug
+    ex_loop_pipelining.mc
+
+  paths and options:
+    SRC_VERSION    = carte54
+    QUARTUS        = /opt/altera13.0/quartus
+    INCLUDE_PATH   = /opt/srcci/carte54/include
+
+    /opt/srcci/carte54/bin/srccc -srcinfopath /opt/srcci/carte54/lib/macros/map_m/carte.info:/opt/srcci/carte54/lib/macros/map_m/src_ieee_v1.info -DCARTE_EX_MODE_DBG -I. -I/opt/srcci/carte54/include -I/opt/srcci/carte54/include/src7 -Mq,4,2 -Mvect=wrp -maptarget map_m -I/opt/srcci/carte54/include -D_STDIO_H -DMAPM -chip StratixIV -machine src7 -V -O4 ex_loop_pipelining.mc
+    /opt/srcci/carte54/bin/martello -srcinfopath /opt/srcci/carte54/lib/macros/map_m/carte.info:/opt/srcci/carte54/lib/macros/map_m/src_ieee_v1.info -user_debug -maptarget map_m -DMAPM -chip StratixIV -machine src7 ex_loop_pipelining.cfg
+    /opt/srcci/carte54/bin/martello_dyn -srcinfopath /opt/srcci/carte54/lib/macros/map_m/carte.info:/opt/srcci/carte54/lib/macros/map_m/src_ieee_v1.info -user_debug ex_loop_pipelining.cfg
+    /opt/srcci/carte54/bin/dinamite -srcinfopath /opt/srcci/carte54/lib/macros/map_m/carte.info:/opt/srcci/carte54/lib/macros/map_m/src_ieee_v1.info ex_loop_pipelining.dcfg
+    /opt/srcci/carte54/bin/cgen -srcinfopath /opt/srcci/carte54/lib/macros/map_m/carte.info:/opt/srcci/carte54/lib/macros/map_m/src_ieee_v1.info -maptarget map_m -DMAPM -chip StratixIV -machine src7 ex_loop_pipelining.dfg
+
+  mcc:  /opt/srcci/carte54/bin/srccc -srcinfopath /opt/srcci/carte54/lib/macros/map_m/carte.info:/opt/srcci/carte54/lib/macros/map_m/src_ieee_v1.info -DCARTE_EX_MODE_DBG -I. -I/opt/srcci/carte54/include -I/opt/srcci/carte54/include/src7 -Mq,4,2 -Mvect=wrp -maptarget map_m -I/opt/srcci/carte54/include -D_STDIO_H -DMAPM -chip StratixIV -machine src7 -V -O4 ex_loop_pipelining.mc
+  mcc:  /opt/srcci/carte54/bin/martello -srcinfopath /opt/srcci/carte54/lib/macros/map_m/carte.info:/opt/srcci/carte54/lib/macros/map_m/src_ieee_v1.info -user_debug -maptarget map_m -DMAPM -chip StratixIV -machine src7 ex_loop_pipelining.cfg

@@ -1,0 +1,47 @@
+ data dependence file for ex_loop_pipelining.mc
+ ------  data dependence for loop 1 1 25
+      fg ili ilt nme sst sct typ nst  lp  rg fsb flags
+  1:   5  77  13  26   1   1   l   1   1   0   0 <iu >    26~ <i>
+  2:   5 148  13   3   2   1   l   1   1   0   3 <64 ar >     3~ <banka->AL>
+  3:   5  77  13  26   4   1   l   1   1   0   0 <iu >    26~ <i>
+  4:   5 163  13   7   5   1   l   1   1   0   6 <64 ar >     7~ <bankb->BL>
+  5:   5 165  13  29   0   0   s   1   1   0   0 <64 sc >    29~ <.I0000>
+       18 flow #<=.                            
+       17 outp  <..                            
+        5 outp  <..                            
+  6:   5  97  14   0   0   0   b   1   1   0   0 <>
+  7:   4  77  12  26   7   1   l   1   1   0   0 <iu >    26~ <i>
+  8:   4 143  12   3   8   1   l   1   1   0   9 <64 ar >     3~ <banka->AL>
+  9:   4  77  12  26  10   1   l   1   1   0   0 <iu >    26~ <i>
+ 10:   4 157  12   7  11   1   l   1   1   0  12 <64 ar >     7~ <bankb->BL>
+ 11:   4 160  12   0   0   0   p   1   1   0   0 <sc >
+ 12:   4 162  12   0   0   0   b   1   1   0   0 <>
+ 13:   6  77  15  26  13   1   l   1   1   0   0 <iu >    26~ <i>
+ 14:   6 140  15   3  14   1   l   1   1   0  15 <64 ar >     3~ <banka->AL>
+ 15:   6  77  15  26  16   1   l   1   1   0   0 <iu >    26~ <i>
+ 16:   6 154  15   7  17   1   l   1   1   0  18 <64 ar >     7~ <bankb->BL>
+ 17:   6 156  15  29   0   0   s   1   1   0   0 <64 sc >    29~ <.I0000>
+       18 flow #<=.                            
+       17 outp  <..                            
+        5 outp  <..                            
+ 18:   7 102  16  29   0   0   l   1   1   0   0 <64 sc >    29~ <.I0000>
+       17 anti  <..                            
+        5 anti  <..                            
+ 19:   7  77  16  26  19   1   l   1   1   0   0 <iu >    26~ <i>
+ 20:   7 169  16  11  20   1   l   1   1   0  21 <64 ar >    11~ <bankc->CL>
+ 21:   7  77  16  26  22   1   l   1   1   0   0 <iu >    26~ <i>
+ 22:   7 177  16  15  23   1   s   1   1   0  24 <64 ar >    15~ <bankd->DL>
+ 23:   7  77  18  26  25   1   l   1   1   0   0 <iu >    26~ <i>
+ 24:   7 112  18  26   0   0   s   1   1   0   0 <sc >    26~ <i>
+       24 outp  <..                            
+ILT 12: LD ILI 143 --> 136 
+ILT 12: LD ILI 157 --> 57 
+ILT 13: LD ILI 148 --> 117 
+ILT 13: LD ILI 163 --> 149 
+ILT 13: ST ILI 165 --> 105 
+ILT 15: LD ILI 140 --> 70 
+ILT 15: LD ILI 154 --> 56 
+ILT 15: ST ILI 156 --> 113 
+ILT 16: LD ILI 169 --> 44 
+ILT 16: ST ILI 177 --> 16 
+ Loop 1 is contained in block 11

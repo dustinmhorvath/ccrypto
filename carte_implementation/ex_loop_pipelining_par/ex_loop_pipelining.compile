@@ -1,0 +1,3 @@
+project_open ulogic_ex_loop_pipelining
+package require ::quartus::project
+package require ::quartus::flow

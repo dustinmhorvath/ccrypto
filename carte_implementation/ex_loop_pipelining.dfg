@@ -1,0 +1,853 @@
+file "ex_loop_pipelining.mc"
+
+defines :
+  "USE_TOMS_CONTROL",
+  "SRC7_ALTERA",
+  "CHIP_1",
+  "MAP_M",
+  "WRITES_OBM_A",
+  "USES_DMA_IB_0",
+  "WRITES_OBM_B",
+  "USES_DMA_IB_1",
+  "WRITES_OBM_C",
+  "USES_DMA_IB_2",
+  "READS_OBM_A",
+  "READS_OBM_B",
+  "WRITES_OBM_D",
+  "READS_OBM_C",
+  "READS_OBM_D",
+  "USES_DMA_OB_0",
+  "USES_VLM0",
+  "USES_VLM1",
+  "DR_20_REFERENCED",
+  "DR_21_REFERENCED",
+  "DR_22_REFERENCED",
+  "DR_23_REFERENCED",
+  "DR_24_REFERENCED",
+  "DR_25_REFERENCED",
+  "DR_42_REFERENCED",
+  "DR_43_REFERENCED",
+  "DR_44_REFERENCED",
+  "DR_45_REFERENCED",
+  "DR_46_REFERENCED",
+  "DR_47_REFERENCED",
+  "DR_49_REFERENCED",
+  "DR_4a_REFERENCED",
+  "OBM_DR_SET_defined" 
+  ;
+
+variable_count: 26
+  "X" integer*8 array param
+  "Y" integer*8 array param
+  "Z" integer*8 array param
+  "Q" integer*8 array param
+  "num" integer*4 scalar param
+  "time" integer*8 scalar param
+  "mapnum_unused" integer*4 scalar param
+  "AL" integer*8 array local
+  "BL" integer*8 array local
+  "CL" integer*8 array local
+  "DL" integer*8 array local
+  "t0" integer*8 scalar local
+  "t1" integer*8 scalar local
+  "i" integer*4 scalar local
+  ".I0000" integer*8 scalar local
+  ".l0000" integer*4 scalar local
+  ".m0000" integer*1 scalar local
+  ".m0001" integer*1 scalar local
+  ".m0002" integer*1 scalar local
+  ".m0003" integer*1 scalar local
+  ".m0004" integer*1 scalar local
+  ".ndi0000" integer*4 scalar local
+  ".ndi0001" integer*4 scalar local
+  ".D0000" integer*4 scalar local
+  ".G0000" integer*1 scalar local
+  ".O0000" integer*4 scalar local
+
+stream_count: 0
+
+barrier_count: 0
+
+lock_count: 0
+
+BLOCK 0:
+  node_count: 7
+  #0 SRC^INITIATE, lat 1, input_count 0, output_count 3
+    O0: 1 bits (r0) -->  5.1 4.1 3.1 2.1
+    O1: 1 bits (r1) --> 
+    O2: 1 bits (r2) --> 
+  #1 SRC^LATCH_AND_4, lat 1, input_count 4, output_count 1
+    I0: 1 bits (r4)
+    I1: 1 bits (r5)
+    I2: 1 bits (r6)
+    I3: 1 bits (r7)
+    O0: 1 bits (r3) -->  6.0
+  #2 SRC^ST_SCALAR_VAL_64 "AL", lat 1, input_count 3, output_count 1
+    I0: 64 bits "0x0"
+    I1: 1 bits (r0)
+    I2: 64 bits "0x42"
+    O0: 1 bits (r4) -->  1.0
+  #3 SRC^ST_SCALAR_VAL_64 "BL", lat 1, input_count 3, output_count 1
+    I0: 64 bits "0x0"
+    I1: 1 bits (r0)
+    I2: 64 bits "0x43"
+    O0: 1 bits (r5) -->  1.1
+  #4 SRC^ST_SCALAR_VAL_64 "CL", lat 1, input_count 3, output_count 1
+    I0: 64 bits "0x0"
+    I1: 1 bits (r0)
+    I2: 64 bits "0x44"
+    O0: 1 bits (r6) -->  1.2
+  #5 SRC^ST_SCALAR_VAL_64 "DL", lat 1, input_count 3, output_count 1
+    I0: 64 bits "0x0"
+    I1: 1 bits (r0)
+    I2: 64 bits "0x45"
+    O0: 1 bits (r7) -->  1.3
+  #6 SRC^OUTPUT, lat 1, input_count 3, output_count 4
+    I0: 1 bits (r3)
+    I1: 1 bits "0x1"
+    I2: 1 bits "0x0"
+    O0: 1 bits (r8) --> 
+    O1: 1 bits (r9) --> 
+    O2: 1 bits (r10) --> 
+    O3: 1 bits (r11) --> 
+TO_BLOCK 1
+
+BLOCK 1:
+  node_count: 3
+  #7 SRC^INITIATE, lat 1, input_count 0, output_count 3
+    O0: 1 bits (r12) -->  8.0
+    O1: 1 bits (r13) --> 
+    O2: 1 bits (r14) --> 
+  #8 SRC^LATCH_AND_1, lat 1, input_count 1, output_count 1
+    I0: 1 bits (r12)
+    O0: 1 bits (r15) -->  9.0
+  #9 SRC^OUTPUT, lat 1, input_count 3, output_count 4
+    I0: 1 bits (r15)
+    I1: 1 bits "0x1"
+    I2: 1 bits "0x0"
+    O0: 1 bits (r16) --> 
+    O1: 1 bits (r17) --> 
+    O2: 1 bits (r18) --> 
+    O3: 1 bits (r19) --> 
+TO_BLOCK 2
+
+BLOCK 2:
+  node_count: 9
+  #10 SRC^INITIATE, lat 1, input_count 0, output_count 3
+    O0: 1 bits (r20) -->  11.0 16.0 15.0 14.0
+    O1: 1 bits (r21) --> 
+    O2: 1 bits (r22) --> 
+  #11 SRC^DUMMY_DELAY_1_1, lat 1, input_count 1, output_count 1
+    I0: 1 bits (r20)
+    O0: 1 bits (r23) -->  17.0 13.5
+  #12 SRC^LSHIFT, line 13, lat 0, input_count 2, output_count 1
+    I0: 32 bits (r26)
+    I1: 32 bits "0x3"
+    O0: 32 bits (r24) -->  13.4
+  #13 buffered_dma_cpu_in_engine_A_1_bank, line 5, lat 0, input_count 6, output_count 1
+    details:
+        "dma_muxes_in" = "0"
+        "obm_write_muxes" = "0"
+        "obm_banks" = "A"
+    I0: 64 bits (r28)
+    I1: 64 bits "0x1"
+    I2: 64 bits (r27)
+    I3: 64 bits "0x1"
+    I4: 32 bits (r24)
+    I5: 1 bits (r23)
+    O0: 1 bits (r25) -->  17.1
+  #14 SRC^LD_SCALAR_VAL_32 "num", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r20)
+    I1: 32 bits "0x24"
+    O0: 32 bits (r26) -->  12.0
+  #15 SRC^LD_SCALAR_VAL_64 "X", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r20)
+    I1: 32 bits "0x20"
+    O0: 64 bits (r27) -->  13.2
+  #16 SRC^LD_SCALAR_VAL_64 "AL", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r20)
+    I1: 32 bits "0x42"
+    O0: 64 bits (r28) -->  13.0
+  #17 SRC^LATCH_AND_2, lat 1, input_count 2, output_count 1
+    I0: 1 bits (r23)
+    I1: 1 bits (r25)
+    O0: 1 bits (r29) -->  18.0
+  #18 SRC^OUTPUT, lat 1, input_count 3, output_count 4
+    I0: 1 bits (r29)
+    I1: 1 bits "0x1"
+    I2: 1 bits "0x0"
+    O0: 1 bits (r30) --> 
+    O1: 1 bits (r31) --> 
+    O2: 1 bits (r32) --> 
+    O3: 1 bits (r33) --> 
+TO_BLOCK 3
+
+BLOCK 3:
+  node_count: 9
+  #19 SRC^INITIATE, lat 1, input_count 0, output_count 3
+    O0: 1 bits (r34) -->  25.0 24.0 23.0 22.0
+    O1: 1 bits (r35) --> 
+    O2: 1 bits (r36) --> 
+  #20 SRC^LSHIFT, line 13, lat 0, input_count 2, output_count 1
+    I0: 32 bits (r39)
+    I1: 32 bits "0x3"
+    O0: 32 bits (r37) -->  21.4
+  #21 buffered_dma_cpu_in_engine_A_1_bank, line 5, lat 0, input_count 6, output_count 1
+    details:
+        "dma_muxes_in" = "1"
+        "obm_write_muxes" = "0"
+        "obm_banks" = "B"
+    I0: 64 bits (r41)
+    I1: 64 bits "0x1"
+    I2: 64 bits (r40)
+    I3: 64 bits "0x1"
+    I4: 32 bits (r37)
+    I5: 1 bits (r42)
+    O0: 1 bits (r38) -->  26.1
+  #22 SRC^LD_SCALAR_VAL_32 "num", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r34)
+    I1: 32 bits "0x24"
+    O0: 32 bits (r39) -->  20.0
+  #23 SRC^LD_SCALAR_VAL_64 "Y", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r34)
+    I1: 32 bits "0x21"
+    O0: 64 bits (r40) -->  21.2
+  #24 SRC^LD_SCALAR_VAL_64 "BL", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r34)
+    I1: 32 bits "0x43"
+    O0: 64 bits (r41) -->  21.0
+  #25 SRC^DUMMY_DELAY_1_1, lat 1, input_count 1, output_count 1
+    I0: 1 bits (r34)
+    O0: 1 bits (r42) -->  26.0 21.5
+  #26 SRC^LATCH_AND_2, lat 1, input_count 2, output_count 1
+    I0: 1 bits (r42)
+    I1: 1 bits (r38)
+    O0: 1 bits (r43) -->  27.0
+  #27 SRC^OUTPUT, lat 1, input_count 3, output_count 4
+    I0: 1 bits (r43)
+    I1: 1 bits "0x1"
+    I2: 1 bits "0x0"
+    O0: 1 bits (r44) --> 
+    O1: 1 bits (r45) --> 
+    O2: 1 bits (r46) --> 
+    O3: 1 bits (r47) --> 
+TO_BLOCK 4
+
+BLOCK 4:
+  node_count: 9
+  #28 SRC^INITIATE, lat 1, input_count 0, output_count 3
+    O0: 1 bits (r48) -->  34.0 33.0 32.0 31.0
+    O1: 1 bits (r49) --> 
+    O2: 1 bits (r50) --> 
+  #29 SRC^LSHIFT, line 13, lat 0, input_count 2, output_count 1
+    I0: 32 bits (r53)
+    I1: 32 bits "0x3"
+    O0: 32 bits (r51) -->  30.4
+  #30 buffered_dma_cpu_in_engine_A_1_bank, line 5, lat 0, input_count 6, output_count 1
+    details:
+        "dma_muxes_in" = "2"
+        "obm_write_muxes" = "0"
+        "obm_banks" = "C"
+    I0: 64 bits (r55)
+    I1: 64 bits "0x1"
+    I2: 64 bits (r54)
+    I3: 64 bits "0x1"
+    I4: 32 bits (r51)
+    I5: 1 bits (r56)
+    O0: 1 bits (r52) -->  35.1
+  #31 SRC^LD_SCALAR_VAL_32 "num", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r48)
+    I1: 32 bits "0x24"
+    O0: 32 bits (r53) -->  29.0
+  #32 SRC^LD_SCALAR_VAL_64 "Z", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r48)
+    I1: 32 bits "0x22"
+    O0: 64 bits (r54) -->  30.2
+  #33 SRC^LD_SCALAR_VAL_64 "CL", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r48)
+    I1: 32 bits "0x44"
+    O0: 64 bits (r55) -->  30.0
+  #34 SRC^DUMMY_DELAY_1_1, lat 1, input_count 1, output_count 1
+    I0: 1 bits (r48)
+    O0: 1 bits (r56) -->  35.0 30.5
+  #35 SRC^LATCH_AND_2, lat 1, input_count 2, output_count 1
+    I0: 1 bits (r56)
+    I1: 1 bits (r52)
+    O0: 1 bits (r57) -->  36.0
+  #36 SRC^OUTPUT, lat 1, input_count 3, output_count 4
+    I0: 1 bits (r57)
+    I1: 1 bits "0x1"
+    I2: 1 bits "0x0"
+    O0: 1 bits (r58) --> 
+    O1: 1 bits (r59) --> 
+    O2: 1 bits (r60) --> 
+    O3: 1 bits (r61) --> 
+TO_BLOCK 5
+
+BLOCK 5:
+  node_count: 6
+  #37 SRC^INITIATE, lat 1, input_count 0, output_count 3
+    O0: 1 bits (r62) -->  38.0
+    O1: 1 bits (r63) --> 
+    O2: 1 bits (r64) --> 
+  #38 read_timer, line 17, lat 1, input_count 1, output_count 2
+    I0: 1 bits (r62)
+    O0: 64 bits (r65) -->  40.0
+    O1: 1 bits (r66) -->  39.0 40.1
+  #39 SRC^DUMMY_DELAY_1_1, lat 1, input_count 1, output_count 1
+    I0: 1 bits (r66)
+    O0: 1 bits (r67) -->  41.1
+  #40 SRC^ST_SCALAR_VAL_64 "t0", lat 1, input_count 3, output_count 1
+    I0: 64 bits (r65)
+    I1: 1 bits (r66)
+    I2: 32 bits "0x46"
+    O0: 1 bits (r68) -->  41.0
+  #41 SRC^LATCH_AND_2, lat 1, input_count 2, output_count 1
+    I0: 1 bits (r68)
+    I1: 1 bits (r67)
+    O0: 1 bits (r69) -->  42.0
+  #42 SRC^OUTPUT, lat 1, input_count 3, output_count 4
+    I0: 1 bits (r69)
+    I1: 1 bits "0x1"
+    I2: 1 bits "0x0"
+    O0: 1 bits (r70) --> 
+    O1: 1 bits (r71) --> 
+    O2: 1 bits (r72) --> 
+    O3: 1 bits (r73) --> 
+TO_BLOCK 6
+
+BLOCK 6:
+  node_count: 7
+  #43 SRC^INITIATE, lat 1, input_count 0, output_count 3
+    O0: 1 bits (r74) -->  44.0 47.1 46.0
+    O1: 1 bits (r75) --> 
+    O2: 1 bits (r76) --> 
+  #44 SRC^DUMMY_DELAY_1_1, lat 1, input_count 1, output_count 1
+    I0: 1 bits (r74)
+    O0: 1 bits (r77) -->  48.1
+  #45 SRC^ICMP_le, line 19, lat 1, input_count 2, output_count 1
+    I0: 32 bits (r79)
+    I1: 0 bits "0x0"
+    O0: 1 bits (r78) -->  49.1
+  #46 SRC^LD_SCALAR_VAL_32 "num", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r74)
+    I1: 32 bits "0x24"
+    O0: 32 bits (r79) -->  45.0
+  #47 SRC^ST_SCALAR_VAL_32 ".ndi0000", lat 1, input_count 3, output_count 1
+    I0: 32 bits "0x0"
+    I1: 1 bits (r74)
+    I2: 32 bits "0x49"
+    O0: 1 bits (r80) -->  48.0
+  #48 SRC^LATCH_AND_2, lat 1, input_count 2, output_count 1
+    I0: 1 bits (r80)
+    I1: 1 bits (r77)
+    O0: 1 bits (r81) -->  49.0
+  #49 SRC^OUTPUT, lat 1, input_count 3, output_count 4
+    I0: 1 bits (r81)
+    I1: 1 bits (r78)
+    I2: 1 bits "0x0"
+    O0: 1 bits (r82) --> 
+    O1: 1 bits (r83) --> 
+    O2: 1 bits (r84) --> 
+    O3: 1 bits (r85) --> 
+TRUE TO_BLOCK 9
+FALSE TO_BLOCK 7
+
+BLOCK 7:
+  node_count: 7
+  #50 SRC^INITIATE, lat 1, input_count 0, output_count 3
+    O0: 1 bits (r86) -->  52.0 54.0 51.0
+    O1: 1 bits (r87) --> 
+    O2: 1 bits (r88) --> 
+  #51 SRC^LD_SCALAR_VAL_32 "num", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r86)
+    I1: 32 bits "0x24"
+    O0: 32 bits (r89) -->  53.0
+  #52 SRC^DUMMY_DELAY_2_1, lat 2, input_count 1, output_count 1
+    I0: 1 bits (r86)
+    O0: 1 bits (r90) -->  55.0
+  #53 SRC^ST_SCALAR_VAL_32 ".O0000", lat 1, input_count 3, output_count 1
+    I0: 32 bits (r89)
+    I1: 1 bits (r92)
+    I2: 32 bits "0x4a"
+    O0: 1 bits (r91) -->  55.1
+  #54 SRC^DUMMY_DELAY_1_1, lat 1, input_count 1, output_count 1
+    I0: 1 bits (r86)
+    O0: 1 bits (r92) -->  53.1
+  #55 SRC^LATCH_AND_2, lat 1, input_count 2, output_count 1
+    I0: 1 bits (r90)
+    I1: 1 bits (r91)
+    O0: 1 bits (r93) -->  56.0
+  #56 SRC^OUTPUT, lat 1, input_count 3, output_count 4
+    I0: 1 bits (r93)
+    I1: 1 bits "0x1"
+    I2: 1 bits "0x0"
+    O0: 1 bits (r94) --> 
+    O1: 1 bits (r95) --> 
+    O2: 1 bits (r96) --> 
+    O3: 1 bits (r97) --> 
+TO_BLOCK 8
+
+BLOCK 8:
+  node_count: 80
+  #57 SRC^INITIATE, line 19, lat 1, input_count 0, output_count 3
+    O0: 1 bits (r98) -->  60.0 71.0 78.0 91.0 115.0 111.0 102.0
+    O1: 1 bits (r99) --> 
+    O2: 1 bits (r100) --> 
+  #58 SRC^KCMP_le, line 20, lat 3, input_count 2, output_count 1
+    I0: 64 bits (r119)
+    I1: 64 bits (r124)
+    O0: 1 bits (r101) -->  120.0
+  #59 SRC^DUMMY_DELAY_20_1Z, lat 20, input_count 1, output_count 1
+    I0: 1 bits (r145)
+    O0: 1 bits (r102) -->  122.0
+  #60 SRC^DUMMY_DELAY_20_1, lat 20, input_count 1, output_count 1
+    I0: 1 bits (r98)
+    O0: 1 bits (r103) -->  121.0
+  #61 SRC^DUMMY_DELAY_1_1, lat 1, input_count 1, output_count 1
+    I0: 1 bits (r164)
+    O0: 1 bits (r104) -->  131.1
+  #62 SRC^DUMMY_DELAY_2_1, lat 2, input_count 1, output_count 1
+    I0: 1 bits (r174)
+    O0: 1 bits (r105) -->  131.0
+  #63 SRC^DUMMY_DELAY_2_1Z, lat 2, input_count 1, output_count 1
+    I0: 1 bits (r180)
+    O0: 1 bits (r106) -->  129.3
+  #64 SRC^KADD, line 20, lat 1, input_count 2, output_count 1
+    I0: 64 bits (r155)
+    I1: 64 bits (r179)
+    O0: 64 bits (r107) -->  126.2
+  #65 SRC^DUMMY_DELAY_2_1Z, lat 2, input_count 1, output_count 1
+    I0: 1 bits (r156)
+    O0: 1 bits (r108) -->  129.2
+  #66 SRC^DUMMY_DELAY_1_1Z, lat 1, input_count 1, output_count 1
+    I0: 1 bits (r140)
+    O0: 1 bits (r109) -->  118.1
+  #67 SRC^DUMMY_DELAY_1_1Z, lat 1, input_count 1, output_count 1
+    I0: 1 bits (r117)
+    O0: 1 bits (r110) -->  118.0
+  #68 SRC^DUMMY_DELAY_30_1Z, lat 30, input_count 1, output_count 1
+    I0: 1 bits (r147)
+    O0: 1 bits (r111) -->  117.2
+  #69 SRC^DUMMY_DELAY_30_1Z, lat 30, input_count 1, output_count 1
+    I0: 1 bits (r146)
+    O0: 1 bits (r112) -->  117.1
+  #70 SRC^DUMMY_DELAY_1_64, lat 1, input_count 1, output_count 1
+    I0: 64 bits (r161)
+    O0: 64 bits (r113) -->  116.2
+  #71 SRC^DUMMY_DELAY_20_1, lat 20, input_count 1, output_count 1
+    I0: 1 bits (r98)
+    O0: 1 bits (r114) -->  119.0
+  #72 SRC^DUMMY_DELAY_20_1Z, lat 20, input_count 1, output_count 1
+    I0: 1 bits (r148)
+    O0: 1 bits (r115) -->  96.0
+  #73 SRC^DUMMY_DELAY_30_1Z, lat 30, input_count 1, output_count 1
+    I0: 1 bits (r147)
+    O0: 1 bits (r116) -->  127.0
+  #74 SRC^DUMMY_DELAY_30_1Z, lat 30, input_count 1, output_count 1
+    I0: 1 bits (r145)
+    O0: 1 bits (r117) -->  67.0
+  #75 SRC^KSUB, line 20, lat 1, input_count 2, output_count 1
+    I0: 64 bits (r155)
+    I1: 64 bits (r179)
+    O0: 64 bits (r118) -->  126.1
+  #76 SRC^LDKR_A_ITER, line 20, lat 23, input_count 3, output_count 1
+    details:
+        "obm_read_high_bits" = "0"
+        "obm_read_muxes" = "0"
+    I0: 64 bits (r120)
+    I1: 1 bits "0x1"
+    I2: 1 bits (r181)
+    O0: 64 bits (r119) -->  109.0 58.0
+  #77 SRC^AADD, line 20, lat 1, input_count 2, output_count 1
+    I0: 64 bits (r162)
+    I1: 64 bits (r137)
+    O0: 64 bits (r120) -->  76.0
+  #78 SRC^DUMMY_DELAY_1_1, lat 1, input_count 1, output_count 1
+    I0: 1 bits (r98)
+    O0: 1 bits (r121) -->  113.0
+  #79 SRC^DUMMY_DELAY_1_64, lat 1, input_count 1, output_count 1
+    I0: 64 bits (r157)
+    O0: 64 bits (r122) -->  112.2
+  #80 SRC^DUMMY_DELAY_1_1Z, lat 1, input_count 1, output_count 1
+    I0: 1 bits (r148)
+    O0: 1 bits (r123) -->  112.1 114.1 116.1
+  #81 SRC^LDKR_B_ITER, line 20, lat 23, input_count 3, output_count 1
+    details:
+        "obm_read_high_bits" = "0"
+        "obm_read_muxes" = "0"
+    I0: 64 bits (r125)
+    I1: 1 bits "0x1"
+    I2: 1 bits (r181)
+    O0: 64 bits (r124) -->  133.0 58.1
+  #82 SRC^AADD, line 20, lat 1, input_count 2, output_count 1
+    I0: 64 bits (r158)
+    I1: 64 bits (r137)
+    O0: 64 bits (r125) -->  81.0
+  #83 SRC^DUMMY_DELAY_1_1Z, lat 1, input_count 1, output_count 1
+    I0: 1 bits (r145)
+    O0: 1 bits (r126) -->  112.0 114.0 116.0
+  #84 SRC^DUMMY_DELAY_1_64, lat 1, input_count 1, output_count 1
+    I0: 64 bits (r153)
+    O0: 64 bits (r127) -->  108.2
+  #85 SRC^DUMMY_DELAY_4_1Z, lat 4, input_count 1, output_count 1
+    I0: 1 bits (r148)
+    O0: 1 bits (r128) -->  108.1
+  #86 SRC^STKR_PIPELINED_D, line 20, lat 1, input_count 4, output_count 1
+    details:
+        "obm_write_high_bits" = "0"
+        "obm_write_muxes" = "0"
+    I0: 64 bits (r130)
+    I1: 64 bits (r136)
+    I2: 1 bits (r164)
+    I3: 1 bits (r173)
+    O0: 1 bits (r129) -->  129.1
+  #87 SRC^KMUL, line 20, lat 3, input_count 2, output_count 1
+    I0: 64 bits (r131)
+    I1: 64 bits (r172)
+    O0: 64 bits (r130) -->  86.0
+  #88 SRC^LDKR_C_ITER, line 20, lat 23, input_count 3, output_count 1
+    details:
+        "obm_read_high_bits" = "0"
+        "obm_read_muxes" = "0"
+    I0: 64 bits (r132)
+    I1: 1 bits "0x1"
+    I2: 1 bits (r171)
+    O0: 64 bits (r131) -->  87.0
+  #89 SRC^AADD, line 20, lat 1, input_count 2, output_count 1
+    I0: 64 bits (r154)
+    I1: 64 bits (r170)
+    O0: 64 bits (r132) -->  88.0
+  #90 SRC^DUMMY_DELAY_4_1Z, lat 4, input_count 1, output_count 1
+    I0: 1 bits (r145)
+    O0: 1 bits (r133) -->  108.0
+  #91 SRC^DUMMY_DELAY_3_1, lat 3, input_count 1, output_count 1
+    I0: 1 bits (r98)
+    O0: 1 bits (r134) -->  107.0
+  #92 SRC^DUMMY_DELAY_1_64, lat 1, input_count 1, output_count 1
+    I0: 64 bits (r151)
+    O0: 64 bits (r135) -->  106.2
+  #93 SRC^AADD, line 20, lat 1, input_count 2, output_count 1
+    I0: 64 bits (r152)
+    I1: 64 bits (r169)
+    O0: 64 bits (r136) -->  86.1
+  #94 SRC^IAMV, line 20, lat 0, input_count 1, output_count 1
+    I0: 32 bits (r138)
+    O0: 64 bits (r137) -->  124.0 82.1 77.1
+  #95 SRC^LSHIFT, line 20, lat 0, input_count 2, output_count 1
+    I0: 32 bits (r160)
+    I1: 32 bits "0x3"
+    O0: 32 bits (r138) -->  94.0
+  #96 SRC^DUMMY_DELAY_8_1Z, lat 8, input_count 1, output_count 1
+    I0: 1 bits (r115)
+    O0: 1 bits (r139) -->  104.1
+  #97 SRC^DUMMY_DELAY_30_1Z, lat 30, input_count 1, output_count 1
+    I0: 1 bits (r148)
+    O0: 1 bits (r140) -->  66.0
+  #98 SRC^DUMMY_DELAY_30_1Z, lat 30, input_count 1, output_count 1
+    I0: 1 bits (r148)
+    O0: 1 bits (r141) -->  106.1
+  #99 SRC^ISUB, line 19, lat 1, input_count 2, output_count 1
+    I0: 32 bits (r150)
+    I1: 32 bits "0x1"
+    O0: 32 bits (r142) -->  101.0
+  #100 SRC^DUMMY_DELAY_30_1Z, lat 30, input_count 1, output_count 1
+    I0: 1 bits (r145)
+    O0: 1 bits (r143) -->  106.0
+  #101 SRC^ICMP_le, line 19, lat 1, input_count 2, output_count 1
+    I0: 32 bits (r142)
+    I1: 0 bits "0x0"
+    O0: 1 bits (r144) -->  128.0
+  #102 SRC^LOOP_DRIVER, lat 1, input_count 2, output_count 4
+    I0: 1 bits (r98)
+    I1: 32 bits "0x0"
+    O0: 1 bits (r145) -->  59.0 74.0 83.0 90.0 100.0
+    O1: 1 bits (r146) -->  110.0 69.0
+    O2: 1 bits (r147) -->  73.0 134.0 68.0 125.0 135.0
+    O3: 1 bits (r148) -->  72.0 97.0 80.0 85.0 98.0
+  #103 SRC^LD_SCALAR_VAL_32 ".O0000", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r167)
+    I1: 32 bits "0x4a"
+    O0: 32 bits (r149) -->  104.2
+  #104 SRC^COUNT_DOWN_32, lat 0, input_count 4, output_count 1
+    I0: 1 bits (r168)
+    I1: 1 bits (r139)
+    I2: 32 bits (r149)
+    I3: 32 bits "0x1"
+    O0: 32 bits (r150) -->  99.0
+  #105 SRC^LD_SCALAR_VAL_64 "DL", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r165)
+    I1: 64 bits "0x45"
+    O0: 64 bits (r151) -->  92.0
+  #106 SRC^CIRCULATE_NR_64, lat 0, input_count 4, output_count 1
+    I0: 1 bits (r143)
+    I1: 1 bits (r141)
+    I2: 64 bits (r135)
+    I3: 64 bits (r152)
+    O0: 64 bits (r152) -->  106.3 93.0
+  #107 SRC^LD_SCALAR_VAL_64 "CL", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r134)
+    I1: 64 bits "0x44"
+    O0: 64 bits (r153) -->  84.0
+  #108 SRC^CIRCULATE_NR_64, lat 0, input_count 4, output_count 1
+    I0: 1 bits (r133)
+    I1: 1 bits (r128)
+    I2: 64 bits (r127)
+    I3: 64 bits (r154)
+    O0: 64 bits (r154) -->  108.3 89.0
+  #109 SRC^DUMMY_DELAY_2_64, lat 2, input_count 1, output_count 1
+    I0: 64 bits (r119)
+    O0: 64 bits (r155) -->  64.0 75.0
+  #110 SRC^DUMMY_DELAY_30_1Z, lat 30, input_count 1, output_count 1
+    I0: 1 bits (r146)
+    O0: 1 bits (r156) -->  65.0
+  #111 SRC^LD_SCALAR_VAL_64 "BL", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r98)
+    I1: 64 bits "0x43"
+    O0: 64 bits (r157) -->  79.0
+  #112 SRC^CIRCULATE_NR_64, lat 0, input_count 4, output_count 1
+    I0: 1 bits (r126)
+    I1: 1 bits (r123)
+    I2: 64 bits (r122)
+    I3: 64 bits (r158)
+    O0: 64 bits (r158) -->  112.3 82.0
+  #113 SRC^LD_SCALAR_VAL_32 ".ndi0000", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r121)
+    I1: 32 bits "0x49"
+    O0: 32 bits (r159) -->  114.2
+  #114 SRC^COUNT_UP_32, lat 0, input_count 4, output_count 1
+    I0: 1 bits (r126)
+    I1: 1 bits (r123)
+    I2: 32 bits (r159)
+    I3: 32 bits "0x1"
+    O0: 32 bits (r160) -->  95.0
+  #115 SRC^LD_SCALAR_VAL_64 "AL", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r98)
+    I1: 64 bits "0x42"
+    O0: 64 bits (r161) -->  70.0
+  #116 SRC^CIRCULATE_NR_64, lat 0, input_count 4, output_count 1
+    I0: 1 bits (r126)
+    I1: 1 bits (r123)
+    I2: 64 bits (r113)
+    I3: 64 bits (r162)
+    O0: 64 bits (r162) -->  116.3 77.0
+  #117 SRC^LOOP_VALID, lat 1, input_count 3, output_count 1
+    I0: 1 bits (r174)
+    I1: 1 bits (r112)
+    I2: 1 bits (r111)
+    O0: 1 bits (r163) -->  118.3
+  #118 SRC^CIRCULATE_1, lat 0, input_count 4, output_count 1
+    I0: 1 bits (r110)
+    I1: 1 bits (r109)
+    I2: 1 bits "0x1"
+    I3: 1 bits (r163)
+    O0: 1 bits (r164) -->  61.0 86.2
+  #119 SRC^DUMMY_DELAY_9_1, lat 9, input_count 1, output_count 1
+    I0: 1 bits (r114)
+    O0: 1 bits (r165) -->  105.0
+  #120 SRC^NOT_1_NR, lat 0, input_count 1, output_count 1
+    I0: 1 bits (r101)
+    O0: 1 bits (r166) -->  126.0
+  #121 SRC^DUMMY_DELAY_8_1, lat 8, input_count 1, output_count 1
+    I0: 1 bits (r103)
+    O0: 1 bits (r167) -->  103.0
+  #122 SRC^DUMMY_DELAY_8_1Z, lat 8, input_count 1, output_count 1
+    I0: 1 bits (r102)
+    O0: 1 bits (r168) -->  104.0
+  #123 SRC^DUMMY_DELAY_SHORT_26_64, lat 26, input_count 1, output_count 1
+    I0: 64 bits (r170)
+    O0: 64 bits (r169) -->  93.1
+  #124 SRC^DUMMY_DELAY_SHORT_3_64, lat 3, input_count 1, output_count 1
+    I0: 64 bits (r137)
+    O0: 64 bits (r170) -->  123.0 89.1
+  #125 SRC^DUMMY_DELAY_5_1Z, lat 5, input_count 1, output_count 1
+    I0: 1 bits (r147)
+    O0: 1 bits (r171) -->  88.2
+  #126 SRC^SELECTOR_64, lat 0, input_count 3, output_count 1
+    I0: 1 bits (r166)
+    I1: 64 bits (r118)
+    I2: 64 bits (r107)
+    O0: 64 bits (r172) -->  87.1
+  #127 SRC^DUMMY_DELAY_1_1Z, lat 1, input_count 1, output_count 1
+    I0: 1 bits (r116)
+    O0: 1 bits (r173) -->  86.3
+  #128 SRC^NOT_1_NR, line 19, lat 0, input_count 1, output_count 1
+    I0: 1 bits (r144)
+    O0: 1 bits (r174) -->  62.0 117.0
+  #129 SRC^TERMINATION, lat 1, input_count 4, output_count 1
+    I0: 1 bits (r178)
+    I1: 1 bits (r129)
+    I2: 1 bits (r108)
+    I3: 1 bits (r106)
+    O0: 1 bits (r175) -->  130.0
+  #130 SRC^LATCH_AND_1, lat 1, input_count 1, output_count 1
+    I0: 1 bits (r175)
+    O0: 1 bits (r176) -->  136.0
+  #131 SRC^N_AND_1_NR, lat 0, input_count 2, output_count 1
+    I0: 1 bits (r105)
+    I1: 1 bits (r104)
+    O0: 1 bits (r177) -->  132.0
+  #132 SRC^NOT_1_NR, lat 0, input_count 1, output_count 1
+    I0: 1 bits (r177)
+    O0: 1 bits (r178) -->  129.0
+  #133 SRC^DUMMY_DELAY_2_64, lat 2, input_count 1, output_count 1
+    I0: 64 bits (r124)
+    O0: 64 bits (r179) -->  75.1 64.1
+  #134 SRC^DUMMY_DELAY_30_1Z, lat 30, input_count 1, output_count 1
+    I0: 1 bits (r147)
+    O0: 1 bits (r180) -->  63.0
+  #135 SRC^DUMMY_DELAY_2_1Z, lat 2, input_count 1, output_count 1
+    I0: 1 bits (r147)
+    O0: 1 bits (r181) -->  76.2 81.2
+  #136 SRC^OUTPUT, lat 1, input_count 3, output_count 4
+    I0: 1 bits (r176)
+    I1: 1 bits "0x1"
+    I2: 1 bits "0x0"
+    O0: 1 bits (r182) --> 
+    O1: 1 bits (r183) --> 
+    O2: 1 bits (r184) --> 
+    O3: 1 bits (r185) --> 
+TO_BLOCK 9
+
+BLOCK 9:
+  node_count: 6
+  #137 SRC^INITIATE, lat 1, input_count 0, output_count 3
+    O0: 1 bits (r186) -->  138.0
+    O1: 1 bits (r187) --> 
+    O2: 1 bits (r188) --> 
+  #138 read_timer, line 23, lat 1, input_count 1, output_count 2
+    I0: 1 bits (r186)
+    O0: 64 bits (r189) -->  140.0
+    O1: 1 bits (r190) -->  139.0 140.1
+  #139 SRC^DUMMY_DELAY_1_1, lat 1, input_count 1, output_count 1
+    I0: 1 bits (r190)
+    O0: 1 bits (r191) -->  141.1
+  #140 SRC^ST_SCALAR_VAL_64 "t1", lat 1, input_count 3, output_count 1
+    I0: 64 bits (r189)
+    I1: 1 bits (r190)
+    I2: 32 bits "0x47"
+    O0: 1 bits (r192) -->  141.0
+  #141 SRC^LATCH_AND_2, lat 1, input_count 2, output_count 1
+    I0: 1 bits (r192)
+    I1: 1 bits (r191)
+    O0: 1 bits (r193) -->  142.0
+  #142 SRC^OUTPUT, lat 1, input_count 3, output_count 4
+    I0: 1 bits (r193)
+    I1: 1 bits "0x1"
+    I2: 1 bits "0x0"
+    O0: 1 bits (r194) --> 
+    O1: 1 bits (r195) --> 
+    O2: 1 bits (r196) --> 
+    O3: 1 bits (r197) --> 
+TO_BLOCK 10
+
+BLOCK 10:
+  node_count: 9
+  #143 SRC^INITIATE, lat 1, input_count 0, output_count 3
+    O0: 1 bits (r198) -->  148.0 149.0 146.0 145.0
+    O1: 1 bits (r199) --> 
+    O2: 1 bits (r200) --> 
+  #144 SRC^KSUB, line 25, lat 1, input_count 2, output_count 1
+    I0: 64 bits (r203)
+    I1: 64 bits (r202)
+    O0: 64 bits (r201) -->  147.0
+  #145 SRC^LD_SCALAR_VAL_64 "t0", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r198)
+    I1: 32 bits "0x46"
+    O0: 64 bits (r202) -->  144.1
+  #146 SRC^LD_SCALAR_VAL_64 "t1", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r198)
+    I1: 32 bits "0x47"
+    O0: 64 bits (r203) -->  144.0
+  #147 SRC^ST_SCALAR_VAL_64 "time", lat 1, input_count 3, output_count 1
+    I0: 64 bits (r201)
+    I1: 1 bits (r206)
+    I2: 32 bits "0x25"
+    O0: 1 bits (r204) -->  150.1
+  #148 SRC^DUMMY_DELAY_3_1, lat 3, input_count 1, output_count 1
+    I0: 1 bits (r198)
+    O0: 1 bits (r205) -->  150.0
+  #149 SRC^DUMMY_DELAY_2_1, lat 2, input_count 1, output_count 1
+    I0: 1 bits (r198)
+    O0: 1 bits (r206) -->  147.1
+  #150 SRC^LATCH_AND_2, lat 1, input_count 2, output_count 1
+    I0: 1 bits (r205)
+    I1: 1 bits (r204)
+    O0: 1 bits (r207) -->  151.0
+  #151 SRC^OUTPUT, lat 1, input_count 3, output_count 4
+    I0: 1 bits (r207)
+    I1: 1 bits "0x1"
+    I2: 1 bits "0x0"
+    O0: 1 bits (r208) --> 
+    O1: 1 bits (r209) --> 
+    O2: 1 bits (r210) --> 
+    O3: 1 bits (r211) --> 
+TO_BLOCK 11
+
+BLOCK 11:
+  node_count: 9
+  #152 SRC^INITIATE, lat 1, input_count 0, output_count 3
+    O0: 1 bits (r212) -->  158.0 157.0 156.0 155.0
+    O1: 1 bits (r213) --> 
+    O2: 1 bits (r214) --> 
+  #153 SRC^LSHIFT, line 13, lat 0, input_count 2, output_count 1
+    I0: 32 bits (r217)
+    I1: 32 bits "0x3"
+    O0: 32 bits (r215) -->  154.4
+  #154 buffered_dma_cpu_out_engine_A_1_bank, line 21, lat 0, input_count 6, output_count 1
+    details:
+        "dma_muxes_out" = "0"
+        "obm_read_muxes" = "0"
+        "obm_banks" = "D"
+    I0: 64 bits (r219)
+    I1: 64 bits "0x1"
+    I2: 64 bits (r218)
+    I3: 64 bits "0x1"
+    I4: 32 bits (r215)
+    I5: 1 bits (r220)
+    O0: 1 bits (r216) -->  159.1
+  #155 SRC^LD_SCALAR_VAL_32 "num", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r212)
+    I1: 32 bits "0x24"
+    O0: 32 bits (r217) -->  153.0
+  #156 SRC^LD_SCALAR_VAL_64 "Q", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r212)
+    I1: 32 bits "0x23"
+    O0: 64 bits (r218) -->  154.2
+  #157 SRC^LD_SCALAR_VAL_64 "DL", lat 1, input_count 2, output_count 1
+    I0: 1 bits (r212)
+    I1: 32 bits "0x45"
+    O0: 64 bits (r219) -->  154.0
+  #158 SRC^DUMMY_DELAY_1_1, lat 1, input_count 1, output_count 1
+    I0: 1 bits (r212)
+    O0: 1 bits (r220) -->  159.0 154.5
+  #159 SRC^LATCH_AND_2, lat 1, input_count 2, output_count 1
+    I0: 1 bits (r220)
+    I1: 1 bits (r216)
+    O0: 1 bits (r221) -->  160.0
+  #160 SRC^OUTPUT, lat 1, input_count 3, output_count 4
+    I0: 1 bits (r221)
+    I1: 1 bits "0x1"
+    I2: 1 bits "0x0"
+    O0: 1 bits (r222) --> 
+    O1: 1 bits (r223) --> 
+    O2: 1 bits (r224) --> 
+    O3: 1 bits (r225) --> 
+TO_BLOCK 12
+
+BLOCK 12:
+  node_count: 2
+  #161 SRC^INITIATE, lat 1, input_count 0, output_count 3
+    O0: 1 bits (r226) -->  162.0
+    O1: 1 bits (r227) --> 
+    O2: 1 bits (r228) --> 
+  #162 SRC^OUTPUT, lat 1, input_count 3, output_count 4
+    I0: 1 bits (r226)
+    I1: 1 bits "0x1"
+    I2: 1 bits "0x0"
+    O0: 1 bits (r229) --> 
+    O1: 1 bits (r230) --> 
+    O2: 1 bits (r231) --> 
+    O3: 1 bits (r232) --> 
+EXIT
+
