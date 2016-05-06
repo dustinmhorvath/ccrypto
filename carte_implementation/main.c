@@ -36,7 +36,7 @@ char* keyInc(char *key, int keylength){
 int bruteSearch(char** dictionary, char *tofind){
     int found = 0;
     int i = 0;
-    for(i = 0; i < sizeof(dictionary); i++){
+    for(i = 0; i < MAXWORDS; i++){
         if(strcmp(dictionary[i], tofind) == 0){
             found = 1;
             break;
@@ -51,6 +51,7 @@ void brutishDecrypt(char *ciphertext, int keylength, int firstwordlength, char *
     //std::clock_t start;
     double duration;
 
+    printf("Attempting decryption...\n");
 
     char arr[keylength];
     char *keyArr = &arr[0];
@@ -65,7 +66,7 @@ void brutishDecrypt(char *ciphertext, int keylength, int firstwordlength, char *
     }
 
     //start = std::clock();
-    while(!(isZs(keyArr, keylength) == 1)){
+    while(isZs(keyArr, keylength) == 0){
 
         // Decrypt with the firstwordlength of chars with the current key
         char substring[1 + firstwordlength];
@@ -74,7 +75,6 @@ void brutishDecrypt(char *ciphertext, int keylength, int firstwordlength, char *
         
         //plaintext = decrypt(substring, keyArr);
         plaintext = "HEY";
-
 
         if(bruteSearch(dictionary, plaintext) == 1){
             printf("Found key %s and plaintext %s\n", keyArr, plaintext);
@@ -146,38 +146,31 @@ int main (int argc, char *argv[]) {
     while(!feof(dictionaryFile)){
         fscanf(dictionaryFile,"%s", line);
         strcpy(words[i], line);
-        printf("%s\n",line);
         i++;
     }
-    printf("\n\n");
 
     // Close dictionary file
     fclose(dictionaryFile);
 
     // For testing. Seems to be functioning adequately.
-    ///*
-//       for(i = 0; i < 4; i++){
-//       printf ("%s \n", words[i]);
-//       }
-       //*/
+    /*
+       for(i = 0; i < 4; i++){
+       printf ("%s \n", words[i]);
+       }
+       */
 
 
     char key[4] = "AAAA";
     char* keyp = &key[0];
     char* temp = keyInc(keyp, 4);
-    if(bruteSearch(words, "two") == 1){
-        printf ("FOUND\n");
-    }
-    else{
-        printf ("NOT FOUND\n");
-    }
 
     //    A = (int64_t*) Cache_Aligned_Allocate (SZ * sizeof (int64_t));
     //    B = (int64_t*) Cache_Aligned_Allocate (SZ * sizeof (int64_t));
     //    C = (int64_t*) Cache_Aligned_Allocate (SZ * sizeof (int64_t));
     //    D = (int64_t*) Cache_Aligned_Allocate (SZ * sizeof (int64_t));
 
-    //brutishDecrypt("MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", 2, 6, words);
+    printf("%d \n", bruteSearch(words, "HI"));
+//    brutishDecrypt("MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", 2, 6, words);
 
 
     map_allocate (1);
