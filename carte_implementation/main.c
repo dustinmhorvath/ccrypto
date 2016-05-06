@@ -19,16 +19,17 @@ int isZs(char *key, int keylength){
 }
 
 char* keyInc(char *key, int keylength){
-    
+   
     key[keylength - 1]++;
     int i = 0;
-
     for(i = keylength - 1; i > 0; i--){
         if(key[i] > 'Z'){
             key[i] -= 26;
             key[i-1]++;
         }
     }
+    
+    //printf("%s\n", key);
 
     return key;
 }
@@ -46,6 +47,39 @@ int bruteSearch(char** dictionary, char *tofind){
 
 }
 
+char *decrypt(char *text, int length, char* key, int keylength){
+    char *decrypted = malloc(sizeof(char) * (length+1));
+    //printf("%s, %d, %s\n", text, length, key);
+    int i, j = 0;
+
+    // Loop across ciphertext chars
+    for(i = 0, j = 0; i < length; i++){
+        // Read in a ciphertext character
+        char ciph = text[i];
+        // Force to uppercase
+        
+        /*
+        if(ciph >= 'a' && ciph <= 'z'){
+            ciph += (char)('A' - 'a');
+        }
+        
+        // Discard non-alphabetic chars.
+        // This is helpful because it hides word breaks and punctuation.
+        
+        else if(ciph < 'A' || ciph > 'Z'){
+            continue;
+        }
+
+        // Reverse of viginere from above
+        decrypted += (ciph - key[j] + 26) % 26 + 'A';
+        j = (j + 1) % keylength;
+        */
+    }
+
+    return decrypted;
+}
+
+
 void brutishDecrypt(char *ciphertext, int keylength, int firstwordlength, char **dictionary){
 
     //std::clock_t start;
@@ -53,8 +87,7 @@ void brutishDecrypt(char *ciphertext, int keylength, int firstwordlength, char *
 
     printf("Attempting decryption...\n");
 
-    char arr[keylength];
-    char *keyArr = &arr[0];
+    char *keyArr = malloc(sizeof(char)*keylength);
 
     char *plaintext;
     char *substring;
@@ -73,8 +106,8 @@ void brutishDecrypt(char *ciphertext, int keylength, int firstwordlength, char *
         memcpy( substring, &ciphertext[0], firstwordlength );
         substring[firstwordlength] = '\0';
         
-        //plaintext = decrypt(substring, keyArr);
-        plaintext = "HEY";
+        plaintext = decrypt(substring, firstwordlength, keyArr, keylength);
+        //printf("%s \n", plaintext);
 
         if(bruteSearch(dictionary, plaintext) == 1){
             printf("Found key %s and plaintext %s\n", keyArr, plaintext);
@@ -82,41 +115,13 @@ void brutishDecrypt(char *ciphertext, int keylength, int firstwordlength, char *
 
 
         // Increment the key array
-        keyArr = keyInc(keyArr, keylength);
-
-//        free(plaintext);
+        strcpy(keyArr, keyInc(&keyArr[0], keylength));
+        
+        free(plaintext);
     }
 
+    free(keyArr);
 
-
-}
-
-char *decrypt(char *text, char* key){
-    char *decrypted = malloc(sizeof(text));
-    int i, j = 0;
-
-    // Loop across ciphertext chars
-    for(i = 0, j = 0; i < sizeof(text); ++i){
-        // Read in a ciphertext character
-        char ciph = text[i];
-        // Force to uppercase
-        if(ciph >= 'a' && ciph <= 'z'){
-            ciph += 'A' - 'a';
-        }
-        /*
-         * Discard non-alphabetic chars.
-         * This is helpful because it hides word breaks and punctuation.
-         */
-        else if(ciph < 'A' || ciph > 'Z'){
-            continue;
-        }
-
-        // Reverse of viginere from above
-        decrypted += (ciph - key[j] + 26) % 26 + 'A';
-        j = (j + 1) % sizeof(key);
-    }
-
-    return decrypted;
 }
 
 int main (int argc, char *argv[]) {
@@ -169,8 +174,8 @@ int main (int argc, char *argv[]) {
     //    C = (int64_t*) Cache_Aligned_Allocate (SZ * sizeof (int64_t));
     //    D = (int64_t*) Cache_Aligned_Allocate (SZ * sizeof (int64_t));
 
-    printf("%d \n", bruteSearch(words, "HI"));
-//    brutishDecrypt("MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", 2, 6, words);
+    //printf("%d \n", bruteSearch(words, "HI"));
+    brutishDecrypt("MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", 2, 6, words);
 
 
     map_allocate (1);
