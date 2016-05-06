@@ -33,7 +33,7 @@ char* keyInc(char *key, int keylength){
     return key;
 }
 
-int bruteSearch(char **dictionary, char *tofind){
+int bruteSearch(char** dictionary, char *tofind){
     int found = 0;
     int i = 0;
     for(i = 0; i < sizeof(dictionary); i++){
@@ -75,17 +75,7 @@ void brutishDecrypt(char *ciphertext, int keylength, int firstwordlength, char *
         //plaintext = decrypt(substring, keyArr);
         plaintext = "HEY";
 
-        // Search the hashmap for the plaintext
-        //auto it = m.find(plaintext);
 
-        // If found, push the key onto a queue<string>, then keep searching for
-        // more keys.
-        /*
-           if (it != m.end()){
-           std::cout << "Found string " << plaintext << " at " << it->second << " with key " << key << "\n";
-           possiblekeys.push(key);
-           }
-           */
         if(bruteSearch(dictionary, plaintext) == 1){
             printf("Found key %s and plaintext %s\n", keyArr, plaintext);
         }
@@ -94,7 +84,7 @@ void brutishDecrypt(char *ciphertext, int keylength, int firstwordlength, char *
         // Increment the key array
         keyArr = keyInc(keyArr, keylength);
 
-        free(plaintext);
+//        free(plaintext);
     }
 
 
@@ -135,13 +125,16 @@ int main (int argc, char *argv[]) {
     int64_t *A, *B, *C, *D;
     int64_t tm;
     int mapnum = 0;
-    char *line = NULL;
+    char line[25];
     size_t len = 0;
     size_t count;
     ssize_t read = 0;
 
     // Declare static array, since the size is known
-    char words[MAXWORDS][MAXWORDSIZE];
+    char** words = malloc(sizeof(char*) * MAXWORDS + 5);
+    for(i = 0; i < MAXWORDS + 5; i++){
+        words[i] = malloc(sizeof(char) * MAXWORDSIZE);
+    }
 
     if ((dictionaryFile = fopen ("dictionary.txt", "r")) == NULL) {
         fprintf (stderr, "failed to open file 'dictionary.txt'\n");
@@ -150,29 +143,29 @@ int main (int argc, char *argv[]) {
 
     // Read the dictionary into a string* array.
     i = 0;
-    j = 0;
-    while(getline(&line, &count, dictionaryFile)!=-1) {
-        for (; count > 0; count--, j++)
-            sscanf(line, "%s", &words[i]);
+    while(!feof(dictionaryFile)){
+        fscanf(dictionaryFile,"%s", line);
+        strcpy(words[i], line);
+        printf("%s\n",line);
         i++;
     }
+    printf("\n\n");
 
     // Close dictionary file
     fclose(dictionaryFile);
 
     // For testing. Seems to be functioning adequately.
-    /*
-       for(i = 500; i < 520; i++){
-       printf ("%s\n",  words[i]);
-       }
-       */
+    ///*
+//       for(i = 0; i < 4; i++){
+//       printf ("%s \n", words[i]);
+//       }
+       //*/
 
 
     char key[4] = "AAAA";
     char* keyp = &key[0];
     char* temp = keyInc(keyp, 4);
-    printf ("%s \n", temp);
-    if(bruteSearch(words, "WORD")){    
+    if(bruteSearch(words, "two") == 1){
         printf ("FOUND\n");
     }
     else{
