@@ -49,8 +49,10 @@ int bruteSearch(char** dictionary, char *tofind){
 
 char *decrypt(char *text, int length, char* key, int keylength){
     char *decrypted = malloc(sizeof(char) * (length+1));
+    strcpy(decrypted, "");
     //printf("%s, %d, %s\n", text, length, key);
     int i, j = 0;
+
 
     // Loop across ciphertext chars
     for(i = 0, j = 0; i < length; i++){
@@ -58,7 +60,7 @@ char *decrypt(char *text, int length, char* key, int keylength){
         char ciph = text[i];
         // Force to uppercase
         
-        /*
+        
         if(ciph >= 'a' && ciph <= 'z'){
             ciph += (char)('A' - 'a');
         }
@@ -70,10 +72,13 @@ char *decrypt(char *text, int length, char* key, int keylength){
             continue;
         }
 
-        // Reverse of viginere from above
-        decrypted += (ciph - key[j] + 26) % 26 + 'A';
+        // TODO trouble here
+        char decryptChar[2];
+        decryptChar[0] = (char)((ciph - key[j] + 26) % 26 + 'A');
+        decryptChar[1] = '\0';
+        strcat(decrypted, decryptChar);
         j = (j + 1) % keylength;
-        */
+        
     }
 
     return decrypted;
