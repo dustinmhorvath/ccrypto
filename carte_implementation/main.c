@@ -58,13 +58,6 @@ int main (int argc, char *argv[]) {
        */
 
 
-    char key[4] = "AAAA";
-    char* keyp = &key[0];
-    char* temp = keyInc(keyp, 4);
-
-
-
-
     // call the MAP routine
     //subr (A, B, C, D, num, &tm, mapnum);
     char* foundkey = malloc(sizeof(char)*MAXWORDSIZE);
