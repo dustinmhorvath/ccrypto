@@ -18,19 +18,18 @@
 
 char* keyIncrement(char *key, int keylength);
 
-void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], char ciphertext[], int ciphertextlength, char foundkey[], int numwords, int firstwordlength, int keylength, int64_t *time, int mapnum) {
-
-    //OBM_BANK_C_2D (CL, char, 7, NUMSIX)
+void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int ciphertextlength, char foundkey[], int numwords, int firstwordlength, int keylength, int64_t *time, int mapnum) {
 
 
     int64_t t0, t1;
-    int i, j, cont;
+    int i, j, k, cont;
     int notzs;
     char plaintext[100];
     char substring[MAXWORDSIZE];
-    char decryptChar[2];
+    char decryptChar;
     char decrypted[MAXWORDSIZE + 1];
     char ciphChar;
+    char ciphertextchars[100];
 
     Stream_64 SA,SB;
 
@@ -39,9 +38,8 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], char ciphertext[], int cip
     OBM_BANK_A (AL, int64_t, MAX_OBM_SIZE)
     OBM_BANK_C_2D (CL, int64_t,  NUMSIX, 8)
 
-    //buffered_dma_cpu (CM2OBM, PATH_0, AL, MAP_OBM_stripe (1,"A"), dictionary, 1, firstwordlength * numwords);
     buffered_dma_cpu (CM2OBM, PATH_0, CL, MAP_OBM_stripe (1,"C"), dictionary, 1, (6 + 0) * NUMSIX * sizeof(int64_t));
-    buffered_dma_cpu (CM2OBM, PATH_0, AL, MAP_OBM_stripe (1,"A"), dictionary, 1, ciphertextlength + 1);
+    buffered_dma_cpu (CM2OBM, PATH_0, AL, MAP_OBM_stripe (1,"A"), ciphertext, 1, (ciphertextlength + 1) * sizeof(int64_t));
 
     // CONFIRMED WORKING
     /*
@@ -56,56 +54,48 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], char ciphertext[], int cip
     printf("Attempting MAP decryption...\n");
 
     read_timer (&t0);
-    
-    
+     
     // Start with all A's
     for(i = 0; i < keylength; i++){
         keyArr[i] = 'A';
     }
 
-    
+    // Convert ciphertext back into chars
+    for(i = 0; i <= ciphertextlength; i++){
+        ciphertextchars[i] = (char)AL[i];
+    }
 
     
     cont = 1;
     while(cont == 1){
-        
-        for(i = 0; i < keylength; i++){
-            printf("%c", keyArr[i]);
-        }
-        
-        printf("\n");
 
-        
         notzs = 1;
         for(i = 0; i < keylength; i++){
             if(keyArr[i] != 'Z'){
                 notzs = 0;
             }
         }
-        if(notzs == 0){
+        if(notzs == 1){
+            //break;
             cont = 0;
         }
-        
-        
-        /*
+
+
+
         else{
 
             // Decrypt with the firstwordlength of chars with the current key
-            //memcpy( substring, &AL[0], firstwordlength );
             for(i = 0; i < firstwordlength; i++){
-                substring[i] = AL[i];
+                substring[i] = ciphertextchars[i];
             }
-            
             substring[firstwordlength] = '\0';
 
-            //plaintext = decrypt(substring, firstwordlength, keyArr, keylength);
 
-            // DECRYPT BLOCK
-            //strcpy(decrypted, "");
-            
+
+            // ~~~~~~~DECRYPT BLOCK~~~~~~~
             for(i = 0, j = 0; i < firstwordlength; i++){
                 // Read in a ciphertext character
-                ciphChar = AL[i];
+                ciphChar = substring[i];
                 // Force to uppercase
 
                 if(ciphChar >= 'a' && ciphChar <= 'z'){
@@ -119,41 +109,42 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], char ciphertext[], int cip
                     continue;
                 }
 
-                decryptChar[0] = (char)((ciphChar - keyArr[j] + 26) % 26 + 'A');
-                decryptChar[1] = '\0';
-                
+                decryptChar = (char)((ciphChar - keyArr[j] + 26) % 26 + 'A');
+
                 //strcat(decrypted, decryptChar);
-                decrypted[i] = decryptChar[0];
-                
+                decrypted[i] = decryptChar;
+
                 j = (j + 1) % keylength;
 
             }
 
-        }
-        */
 
-        /*
-        printf("%s \n", plaintext);
-        if(bruteSearch(dictionary, plaintext) == 1){
-            printf("Found key %s and plaintext %s\n", keyArr, plaintext);
-        }
-        // Increment the key array
-        //strcpy(keyArr, keyInc(&keyArr[0], keylength));
-        //free(plaintext);
-        */
 
-        
-        i = 0;
-        keyArr[keylength - 1]++;
-        for(i = keylength - 1; i > 0; i--){
-            if(keyArr[i] > 'Z'){
-                keyArr[i] -= 26;
-                keyArr[i-1]++;
-            }
-        }
-        
-        cont++;
+            decrypted[firstwordlength] = '\0';
+
+            printf("%s \n", decrypted);
             
+            /*
+               if(bruteSearch(dictionary, plaintext) == 1){
+               printf("Found key %s and plaintext %s\n", keyArr, plaintext);
+               }
+            // Increment the key array
+            //strcpy(keyArr, keyInc(&keyArr[0], keylength));
+            //free(plaintext);
+             */
+
+
+            i = 0;
+            keyArr[keylength - 1]++;
+            for(i = keylength - 1; i > 0; i--){
+                if(keyArr[i] > 'Z'){
+                    keyArr[i] -= 26;
+                    keyArr[i-1]++;
+                }
+            }
+
+        }
+
     }
     
     

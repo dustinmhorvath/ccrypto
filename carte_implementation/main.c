@@ -14,7 +14,7 @@
 #define ENDSIX 28838
 
 
-void subr (int64_t**, char*, int,  char*, int, int, int, int64_t*, int);
+void subr (int64_t**, int64_t*, int,  char*, int, int, int, int64_t*, int);
 
 
 int main (int argc, char *argv[]) {
@@ -81,9 +81,15 @@ int main (int argc, char *argv[]) {
      
     brutishDecrypt("MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", 2, 6, words, MAXWORDS);
 
+    char ciphertextchars[32] = "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX\0";
+    int64_t* ciphertext = malloc(sizeof(int64_t) * 32);
+    for(i = 0; i < 32; i++){
+        ciphertext[i] = (int64_t)ciphertextchars[i];
+    }
+
     map_allocate (1);
     //subr (sixCharOnly, "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", &foundkey, ENDSIX-STARTSIX+1, 6, 2, &tm, mapnum);
-    subr (&sixCharOnly[0][0], "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", 31, &foundkey, ENDSIX-STARTSIX+1, 6, 2, &tm, mapnum);
+    subr (&sixCharOnly[0][0], ciphertext, 31, &foundkey, ENDSIX-STARTSIX+1, 6, 2, &tm, mapnum);
 
     
     //printf ("%lld clocks\n", tm);
