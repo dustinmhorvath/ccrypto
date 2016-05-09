@@ -17,7 +17,7 @@
 void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], char ciphertext[], char foundkey[], int numwords, int firstwordlength, int keylength, int64_t *time, int mapnum) {
 
     //OBM_BANK_C_2D (CL, char, 7, NUMSIX)
-    OBM_BANK_C_2D (CL, int64_t,  NUMSIX, 7)
+    OBM_BANK_C_2D (CL, int64_t,  NUMSIX, 8)
 
 
     int64_t t0, t1;
@@ -35,12 +35,12 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], char ciphertext[], char fo
 
     // CONFIRMED WORKING SORTA
     // second index is getting incremented by the current word index for some reason
-    printf("CL starts with %c \n", CL[2][1]);
-    printf("CL starts with %c \n", CL[2][2]);
-    printf("CL starts with %c \n", CL[2][3]);
-    printf("CL starts with %c \n", CL[2][4]);
-    printf("CL starts with %c \n", CL[2][5]);
-    printf("CL starts with %c \n", CL[2][6]);
+    printf("CL starts with %c \n", CL[3][0]);
+    printf("CL starts with %c \n", CL[3][1]);
+    printf("CL starts with %c \n", CL[3][2]);
+    printf("CL starts with %c \n", CL[3][3]);
+    printf("CL starts with %c \n", CL[3][4]);
+    printf("CL starts with %c \n", CL[3][5]);
 
 
 
