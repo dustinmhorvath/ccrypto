@@ -1,28 +1,37 @@
 #include <libmap.h>
+#include <string.h>
 
-void subr (int64_t X[], int64_t Y[], int64_t Z[], int64_t Q[], int num, int64_t *time, int mapnum) {
+#define MAXWORDS 167964
+#define MAXWORDLENGTH 20
+
+int globalnum;
+char* globalkey;
+
+// 'dictionary' : list of (int64_t)chars representing the dictionary for 'firstwordlength' only
+// 'ciphertext' : char[] of text to be decrypted
+// 'foundkey' : location that the actual brute-forced key will be stored on finish
+// 'numwords' : the number of 'firstwordlength' words stored in 'dictionary'. Tell you how long 'dictionary' is:firstwordlength*numwords
+
+void subr (int64_t dictionary[MAXWORDS*MAXWORDLENGTH], char ciphertext[], char foundkey[], int numwords, int firstwordlength, int keylength, int64_t *time, int mapnum) {
 
     OBM_BANK_A (AL, int64_t, MAX_OBM_SIZE)
     OBM_BANK_B (BL, int64_t, MAX_OBM_SIZE)
-    OBM_BANK_C (CL, int64_t, MAX_OBM_SIZE)
-    OBM_BANK_D (DL, int64_t, MAX_OBM_SIZE)
-    
+
     int64_t t0, t1;
     int i;
 
-    buffered_dma_cpu (CM2OBM, PATH_0, AL, MAP_OBM_stripe (1,"A"), X, 1, num*8);
-    buffered_dma_cpu (CM2OBM, PATH_0, BL, MAP_OBM_stripe (1,"B"), Y, 1, num*8);
-    buffered_dma_cpu (CM2OBM, PATH_0, CL, MAP_OBM_stripe (1,"C"), Z, 1, num*8);
+    buffered_dma_cpu (CM2OBM, PATH_0, AL, MAP_OBM_stripe (1,"A"), dictionary, 1, firstwordlength * numwords);
 
     read_timer (&t0);
 
-    for (i=0; i<num; i++) {
-	DL[i] = CL[i] * (AL[i]>BL[i] ? AL[i]-BL[i] : AL[i]+BL[i]);
-	}
+    BL[0] = AL[0];
+    BL[1] = AL[1];
+    BL[2] = '\0';
+
 
     read_timer (&t1);
 
     *time = t1 - t0;
 
-    buffered_dma_cpu (OBM2CM, PATH_0, DL, MAP_OBM_stripe (1,"D"), Q, 1, num*8);
+    buffered_dma_cpu (OBM2CM, PATH_0, BL, MAP_OBM_stripe (1,"B"), foundkey, 1, keylength + 1);
 }

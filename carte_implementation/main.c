@@ -4,8 +4,14 @@
 
 #define MAXWORDSIZE 20
 #define MAXWORDS 167964
+#define STARTTWO 0
+#define ENDTWO 95
 
-void subr (int64_t*, int64_t*, int64_t*, int64_t*, int, int64_t*, int);
+#define STARTSIX 13607
+#define ENDSIX 28838
+
+
+void subr (int64_t*, char*, char*, int, int, int, int64_t*, int);
 
 int isZs(char *key, int keylength){
     int notzs = 1;
@@ -29,8 +35,6 @@ char* keyInc(char *key, int keylength){
         }
     }
     
-    //printf("%s\n", key);
-
     return key;
 }
 
@@ -72,7 +76,6 @@ char *decrypt(char *text, int length, char* key, int keylength){
             continue;
         }
 
-        // TODO trouble here
         char decryptChar[2];
         decryptChar[0] = (char)((ciph - key[j] + 26) % 26 + 'A');
         decryptChar[1] = '\0';
@@ -174,22 +177,34 @@ int main (int argc, char *argv[]) {
     char* keyp = &key[0];
     char* temp = keyInc(keyp, 4);
 
-    //    A = (int64_t*) Cache_Aligned_Allocate (SZ * sizeof (int64_t));
-    //    B = (int64_t*) Cache_Aligned_Allocate (SZ * sizeof (int64_t));
-    //    C = (int64_t*) Cache_Aligned_Allocate (SZ * sizeof (int64_t));
-    //    D = (int64_t*) Cache_Aligned_Allocate (SZ * sizeof (int64_t));
 
-    //printf("%d \n", bruteSearch(words, "HI"));
     brutishDecrypt("MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", 2, 6, words);
-
 
     map_allocate (1);
 
-
-
     // call the MAP routine
     //subr (A, B, C, D, num, &tm, mapnum);
+    char* foundkey = malloc(sizeof(char)*MAXWORDSIZE);
+    foundkey = "blah";
+    
+    
+    int64_t sixCharAsInt[6*(ENDSIX-STARTSIX+1)];
+    for(i = STARTSIX; i <= ENDSIX; i++){
+        sixCharAsInt[i - STARTSIX] = (int64_t)words[i][0];
+        sixCharAsInt[i+1 - STARTSIX] = (int64_t)words[i][1];
+        sixCharAsInt[i+2 - STARTSIX] = (int64_t)words[i][2];
+        sixCharAsInt[i+3 - STARTSIX] = (int64_t)words[i][3];
+        sixCharAsInt[i+4 - STARTSIX] = (int64_t)words[i][4];
+        sixCharAsInt[i+5 - STARTSIX] = (int64_t)words[i][5];
 
+    }
+    printf("sixCharAsInt starts with %c \n", (char)sixCharAsInt[0]);
+
+    subr (sixCharAsInt, "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", foundkey, ENDSIX-STARTSIX+1, 6, 2, &tm, mapnum);
+
+    
+    printf ("foundkey contains '%s' \n", foundkey);
+    
     //printf ("%lld clocks\n", tm);
 
 
