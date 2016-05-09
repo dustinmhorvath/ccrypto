@@ -1,7 +1,9 @@
 #include <libmap.h>
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-//#include "Decrypt.h"
+//#include "KeyInc.mc"
 
 #define MAXWORDS 167964
 #define MAXWORDSIZE 20
@@ -14,38 +16,44 @@
 // 'foundkey' : location that the actual brute-forced key will be stored on finish
 // 'numwords' : the number of 'firstwordlength' words stored in 'dictionary'. Tell you how long 'dictionary' is:firstwordlength*numwords
 
-void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], char ciphertext[], char foundkey[], int numwords, int firstwordlength, int keylength, int64_t *time, int mapnum) {
+char* keyIncrement(char *key, int keylength);
+
+void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], char ciphertext[], int ciphertextlength, char foundkey[], int numwords, int firstwordlength, int keylength, int64_t *time, int mapnum) {
 
     //OBM_BANK_C_2D (CL, char, 7, NUMSIX)
-    OBM_BANK_C_2D (CL, int64_t,  NUMSIX, 8)
 
 
     int64_t t0, t1;
-    int i, j;
+    int i, j, cont;
+    int notzs;
+    char plaintext[100];
+    char substring[MAXWORDSIZE];
+    char decryptChar[2];
+    char decrypted[MAXWORDSIZE + 1];
+    char ciphChar;
 
     Stream_64 SA,SB;
 
     char keyArr[10];
-//    char *plaintext;
-//    char substring[MAXWORDSIZE];
-//    char dictionary[MAXWORDSIZE][MAXWORDSIZE];
+ 
+    OBM_BANK_A (AL, int64_t, MAX_OBM_SIZE)
+    OBM_BANK_C_2D (CL, int64_t,  NUMSIX, 8)
 
     //buffered_dma_cpu (CM2OBM, PATH_0, AL, MAP_OBM_stripe (1,"A"), dictionary, 1, firstwordlength * numwords);
     buffered_dma_cpu (CM2OBM, PATH_0, CL, MAP_OBM_stripe (1,"C"), dictionary, 1, (6 + 0) * NUMSIX * sizeof(int64_t));
+    buffered_dma_cpu (CM2OBM, PATH_0, AL, MAP_OBM_stripe (1,"A"), dictionary, 1, ciphertextlength + 1);
 
-    // CONFIRMED WORKING SORTA
-    // second index is getting incremented by the current word index for some reason
+    // CONFIRMED WORKING
+    /*
     printf("CL starts with %c \n", CL[3][0]);
     printf("CL starts with %c \n", CL[3][1]);
     printf("CL starts with %c \n", CL[3][2]);
     printf("CL starts with %c \n", CL[3][3]);
     printf("CL starts with %c \n", CL[3][4]);
     printf("CL starts with %c \n", CL[3][5]);
+    */
 
-
-
-
-    printf("Attempting decryption...\n");
+    printf("Attempting MAP decryption...\n");
 
     read_timer (&t0);
     
@@ -55,50 +63,105 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], char ciphertext[], char fo
         keyArr[i] = 'A';
     }
 
+    
 
-    //brutishDecrypt(ciphertext, 2, 6, CL, NUMSIX);
+    
+    cont = 1;
+    while(cont == 1){
+        
+        for(i = 0; i < keylength; i++){
+            printf("%c", keyArr[i]);
+        }
+        
+        printf("\n");
 
-/*
-    while(isZs(keyArr, keylength) == 0){
+        
+        notzs = 1;
+        for(i = 0; i < keylength; i++){
+            if(keyArr[i] != 'Z'){
+                notzs = 0;
+            }
+        }
+        if(notzs == 0){
+            cont = 0;
+        }
+        
+        
+        /*
+        else{
 
-        // Decrypt with the firstwordlength of chars with the current key
-        memcpy( substring, &ciphertext[0], firstwordlength );
-        substring[firstwordlength] = '\0';
+            // Decrypt with the firstwordlength of chars with the current key
+            //memcpy( substring, &AL[0], firstwordlength );
+            for(i = 0; i < firstwordlength; i++){
+                substring[i] = AL[i];
+            }
+            
+            substring[firstwordlength] = '\0';
 
-        plaintext = decrypt(substring, firstwordlength, keyArr, keylength);
-        //printf("%s \n", plaintext);
+            //plaintext = decrypt(substring, firstwordlength, keyArr, keylength);
 
+            // DECRYPT BLOCK
+            //strcpy(decrypted, "");
+            
+            for(i = 0, j = 0; i < firstwordlength; i++){
+                // Read in a ciphertext character
+                ciphChar = AL[i];
+                // Force to uppercase
+
+                if(ciphChar >= 'a' && ciphChar <= 'z'){
+                    ciphChar += (char)('A' - 'a');
+                }
+
+                // Discard non-alphabetic chars.
+                // This is helpful because it hides word breaks and punctuation.
+
+                else if(ciphChar < 'A' || ciphChar > 'Z'){
+                    continue;
+                }
+
+                decryptChar[0] = (char)((ciphChar - keyArr[j] + 26) % 26 + 'A');
+                decryptChar[1] = '\0';
+                
+                //strcat(decrypted, decryptChar);
+                decrypted[i] = decryptChar[0];
+                
+                j = (j + 1) % keylength;
+
+            }
+
+        }
+        */
+
+        /*
+        printf("%s \n", plaintext);
         if(bruteSearch(dictionary, plaintext) == 1){
             printf("Found key %s and plaintext %s\n", keyArr, plaintext);
         }
-
-
         // Increment the key array
-        strcpy(keyArr, keyInc(&keyArr[0], keylength));
+        //strcpy(keyArr, keyInc(&keyArr[0], keylength));
+        //free(plaintext);
+        */
 
-        free(plaintext);
-    }
-*/
-/*
-    #pragma src parallel sections{
-        #pragma src section{
-            int64_t keyinstance;
-            put_stream_64 (&SA, ~keyArr, 1);
-            //streamed_dma_cpu_64 (&SA, PORT_TO_STREAM, I0, 1);
+        
+        i = 0;
+        keyArr[keylength - 1]++;
+        for(i = keylength - 1; i > 0; i--){
+            if(keyArr[i] > 'Z'){
+                keyArr[i] -= 26;
+                keyArr[i-1]++;
+            }
         }
-
-
-
+        
+        cont++;
+            
     }
-*/
-
-
-
-
-
+    
+    
+    
     read_timer (&t1);
 
     *time = t1 - t0;
 
     //buffered_dma_cpu (OBM2CM, PATH_0, BL, MAP_OBM_stripe (1,"B"), foundkey, 1, keylength + 1);
 }
+
