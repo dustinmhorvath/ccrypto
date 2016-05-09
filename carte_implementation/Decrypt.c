@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <string.h>
-#include <Decrypt.h>
 
 
 #define MAXWORDS 167964
+#define MAXWORDSIZE 20
 
 
 int isZs(char *key, int keylength){
@@ -17,10 +17,10 @@ int isZs(char *key, int keylength){
     return notzs;
 }
 
-char* keyInc(char *key, int keylength){
-   
-    key[keylength - 1]++;
+void keyInc(char *key, int keylength){ 
     int i = 0;
+
+    key[keylength - 1]++;
     for(i = keylength - 1; i > 0; i--){
         if(key[i] > 'Z'){
             key[i] -= 26;
@@ -28,13 +28,13 @@ char* keyInc(char *key, int keylength){
         }
     }
     
-    return key;
+    //return key;
 }
 
-int bruteSearch(char** dictionary, char *tofind){
+int bruteSearch(char *tofind, char** dictionary, int numwords){
     int found = 0;
     int i = 0;
-    for(i = 0; i < MAXWORDS; i++){
+    for(i = 0; i < numwords; i++){
         if(strcmp(dictionary[i], tofind) == 0){
             found = 1;
             break;
@@ -45,10 +45,11 @@ int bruteSearch(char** dictionary, char *tofind){
 }
 
 char *decrypt(char *text, int length, char* key, int keylength){
+    int i, j = 0;
+    char decryptChar[2];
     char *decrypted = malloc(sizeof(char) * (length+1));
     strcpy(decrypted, "");
     //printf("%s, %d, %s\n", text, length, key);
-    int i, j = 0;
 
 
     // Loop across ciphertext chars
@@ -69,7 +70,6 @@ char *decrypt(char *text, int length, char* key, int keylength){
             continue;
         }
 
-        char decryptChar[2];
         decryptChar[0] = (char)((ciph - key[j] + 26) % 26 + 'A');
         decryptChar[1] = '\0';
         strcat(decrypted, decryptChar);
@@ -81,20 +81,20 @@ char *decrypt(char *text, int length, char* key, int keylength){
 }
 
 
-void brutishDecrypt(char *ciphertext, int keylength, int firstwordlength, char **dictionary){
+void brutishDecrypt(char *ciphertext, int keylength, int firstwordlength, char **dictionary, int numwords){
 
     //std::clock_t start;
     double duration;
+    char *plaintext;
+    char *substring;
+    int i = 0;
+    char *keyArr = malloc(sizeof(char)*keylength);
 
     printf("Attempting decryption...\n");
 
-    char *keyArr = malloc(sizeof(char)*keylength);
 
-    char *plaintext;
-    char *substring;
 
     // Start with all A's
-    int i = 0;
     for(i = 0; i < keylength; i++){
         keyArr[i] = 'A';
     }
@@ -103,20 +103,20 @@ void brutishDecrypt(char *ciphertext, int keylength, int firstwordlength, char *
     while(isZs(keyArr, keylength) == 0){
 
         // Decrypt with the firstwordlength of chars with the current key
-        char substring[1 + firstwordlength];
+        char substring[MAXWORDSIZE];
         memcpy( substring, &ciphertext[0], firstwordlength );
         substring[firstwordlength] = '\0';
         
         plaintext = decrypt(substring, firstwordlength, keyArr, keylength);
         //printf("%s \n", plaintext);
 
-        if(bruteSearch(dictionary, plaintext) == 1){
+        if(bruteSearch(plaintext, dictionary, numwords) == 1){
             printf("Found key %s and plaintext %s\n", keyArr, plaintext);
         }
 
 
         // Increment the key array
-        strcpy(keyArr, keyInc(&keyArr[0], keylength));
+        keyInc(&keyArr[0], keylength);
         
         free(plaintext);
     }
