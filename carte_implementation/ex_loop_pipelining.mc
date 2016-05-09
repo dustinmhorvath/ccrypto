@@ -84,18 +84,11 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
 
         else{
 
-            // Decrypt with the firstwordlength of chars with the current key
-            for(i = 0; i < firstwordlength; i++){
-                substring[i] = ciphertextchars[i];
-            }
-            substring[firstwordlength] = '\0';
-
-
 
             // ~~~~~~~DECRYPT BLOCK~~~~~~~
             for(i = 0, j = 0; i < firstwordlength; i++){
                 // Read in a ciphertext character
-                ciphChar = substring[i];
+                ciphChar = ciphertextchars[i];
                 // Force to uppercase
 
                 if(ciphChar >= 'a' && ciphChar <= 'z'){
