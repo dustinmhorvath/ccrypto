@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include <Decrypt.c>
+#include "Decrypt.c"
 
 int isZs(char *key, int keylength);
 
