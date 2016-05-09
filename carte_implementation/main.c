@@ -3,7 +3,7 @@
 #include <string.h>
 
 
-#include <Decrypt.c>
+#include <Decrypt.h>
 
 #define MAXWORDSIZE 20
 #define MAXWORDS 167964
@@ -63,9 +63,7 @@ int main (int argc, char *argv[]) {
     char* temp = keyInc(keyp, 4);
 
 
-    brutishDecrypt("MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", 2, 6, words);
 
-    map_allocate (1);
 
     // call the MAP routine
     //subr (A, B, C, D, num, &tm, mapnum);
@@ -73,22 +71,31 @@ int main (int argc, char *argv[]) {
     foundkey = "blah";
     
     
-    int64_t sixCharAsInt[6*(ENDSIX-STARTSIX+1)];
+
+    char** sixCharOnly = malloc(sizeof(char*) * ENDSIX-STARTSIX + 1);
+    for(i = 0; i < ENDSIX-STARTSIX + 1; i++){
+        sixCharOnly[i] = malloc(sizeof(char) * 7);
+    }
+
     for(i = STARTSIX; i <= ENDSIX; i++){
-        sixCharAsInt[i - STARTSIX] = (int64_t)words[i][0];
-        sixCharAsInt[i+1 - STARTSIX] = (int64_t)words[i][1];
-        sixCharAsInt[i+2 - STARTSIX] = (int64_t)words[i][2];
-        sixCharAsInt[i+3 - STARTSIX] = (int64_t)words[i][3];
-        sixCharAsInt[i+4 - STARTSIX] = (int64_t)words[i][4];
-        sixCharAsInt[i+5 - STARTSIX] = (int64_t)words[i][5];
+        sixCharOnly[i - STARTSIX][0] = words[i][0];
+        sixCharOnly[i - STARTSIX][1] = words[i][1];
+        sixCharOnly[i - STARTSIX][2] = words[i][2];
+        sixCharOnly[i - STARTSIX][3] = words[i][3];
+        sixCharOnly[i - STARTSIX][4] = words[i][4];
+        sixCharOnly[i - STARTSIX][5] = words[i][5];
+        sixCharOnly[i - STARTSIX][6] = '\0';
 
     }
-    printf("sixCharAsInt starts with %c \n", (char)sixCharAsInt[0]);
+    printf("sixCharOnly starts with %s \n", sixCharOnly[0]);
+     
+    brutishDecrypt("MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", 2, 6, sixCharOnly, ENDSIX-STARTSIX+1);
 
-    subr (sixCharAsInt, "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", &foundkey, ENDSIX-STARTSIX+1, 6, 2, &tm, mapnum);
+    map_allocate (1);
+//    subr (sixCharOnly, "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", &foundkey, ENDSIX-STARTSIX+1, 6, 2, &tm, mapnum);
 
     
-    printf ("%lld clocks\n", tm);
+    //printf ("%lld clocks\n", tm);
 
 
 
