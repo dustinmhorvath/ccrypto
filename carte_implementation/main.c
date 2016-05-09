@@ -62,33 +62,22 @@ int main (int argc, char *argv[]) {
     //subr (A, B, C, D, num, &tm, mapnum);
     char* foundkey = malloc(sizeof(char)*MAXWORDSIZE);
     foundkey = "blah";
-    
-    int64_t* sixCharInLine = malloc(sizeof(char) * (ENDSIX-STARTSIX + 1) * 7);
-    for(i = STARTSIX; i <= ENDSIX; i++){
-        sixCharInLine[i+0 - STARTSIX] = (int64_t)words[i][0];
-        sixCharInLine[i+1 - STARTSIX] = (int64_t)words[i][1];
-        sixCharInLine[i+2 - STARTSIX] = (int64_t)words[i][2];
-        sixCharInLine[i+3 - STARTSIX] = (int64_t)words[i][3];
-        sixCharInLine[i+4 - STARTSIX] = (int64_t)words[i][4];
-        sixCharInLine[i+5 - STARTSIX] = (int64_t)words[i][5];
-        sixCharInLine[i+6 - STARTSIX] = (int64_t)'\0';
-    }
-
-    char** sixCharOnly = malloc(sizeof(char*) * ENDSIX-STARTSIX + 1);
+   
+    int64_t** sixCharOnly = malloc(sizeof(int64_t*) * ENDSIX-STARTSIX + 1);
     for(i = 0; i < ENDSIX-STARTSIX + 1; i++){
-        sixCharOnly[i] = malloc(sizeof(char) * 7);
+        sixCharOnly[i] = malloc(sizeof(int64_t) * 7);
     }
     for(i = STARTSIX; i <= ENDSIX; i++){
-        sixCharOnly[i - STARTSIX][0] = words[i][0];
-        sixCharOnly[i - STARTSIX][1] = words[i][1];
-        sixCharOnly[i - STARTSIX][2] = words[i][2];
-        sixCharOnly[i - STARTSIX][3] = words[i][3];
-        sixCharOnly[i - STARTSIX][4] = words[i][4];
-        sixCharOnly[i - STARTSIX][5] = words[i][5];
-        sixCharOnly[i - STARTSIX][6] = '\0';
+        sixCharOnly[i - STARTSIX][0] = (int64_t)words[i][0];
+        sixCharOnly[i - STARTSIX][1] = (int64_t)words[i][1];
+        sixCharOnly[i - STARTSIX][2] = (int64_t)words[i][2];
+        sixCharOnly[i - STARTSIX][3] = (int64_t)words[i][3];
+        sixCharOnly[i - STARTSIX][4] = (int64_t)words[i][4];
+        sixCharOnly[i - STARTSIX][5] = (int64_t)words[i][5];
+        sixCharOnly[i - STARTSIX][6] = (int64_t)'\0';
 
     }
-    printf("sixCharOnly starts with %s \n", sixCharOnly[0]);
+    printf("sixCharOnly starts with %c \n", sixCharOnly[0][0]);
      
     brutishDecrypt("MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", 2, 6, words, MAXWORDS);
 

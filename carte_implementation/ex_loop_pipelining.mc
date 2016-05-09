@@ -14,9 +14,10 @@
 // 'foundkey' : location that the actual brute-forced key will be stored on finish
 // 'numwords' : the number of 'firstwordlength' words stored in 'dictionary'. Tell you how long 'dictionary' is:firstwordlength*numwords
 
-void subr (char dictionary[MAXWORDS*MAXWORDSIZE], char ciphertext[], char foundkey[], int numwords, int firstwordlength, int keylength, int64_t *time, int mapnum) {
+void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], char ciphertext[], char foundkey[], int numwords, int firstwordlength, int keylength, int64_t *time, int mapnum) {
 
-    OBM_BANK_C_2D (CL, char, NUMSIX, 6 + 1)
+    //OBM_BANK_C_2D (CL, char, 7, NUMSIX)
+    OBM_BANK_C_2D (CL, int64_t,  NUMSIX, 7)
 
 
     int64_t t0, t1;
@@ -30,10 +31,16 @@ void subr (char dictionary[MAXWORDS*MAXWORDSIZE], char ciphertext[], char foundk
 //    char dictionary[MAXWORDSIZE][MAXWORDSIZE];
 
     //buffered_dma_cpu (CM2OBM, PATH_0, AL, MAP_OBM_stripe (1,"A"), dictionary, 1, firstwordlength * numwords);
-    buffered_dma_cpu (CM2OBM, PATH_0, CL, MAP_OBM_stripe (1,"C"), dictionary, 1, (6 + 1) * NUMSIX);
+    buffered_dma_cpu (CM2OBM, PATH_0, CL, MAP_OBM_stripe (1,"C"), dictionary, 1, (6 + 0) * NUMSIX * sizeof(int64_t));
 
-    // CONFIRMED WORKING
-    printf("CL starts with %s \n", CL[0]);
+    // CONFIRMED WORKING SORTA
+    // second index is getting incremented by the current word index for some reason
+    printf("CL starts with %c \n", CL[2][1]);
+    printf("CL starts with %c \n", CL[2][2]);
+    printf("CL starts with %c \n", CL[2][3]);
+    printf("CL starts with %c \n", CL[2][4]);
+    printf("CL starts with %c \n", CL[2][5]);
+    printf("CL starts with %c \n", CL[2][6]);
 
 
 
