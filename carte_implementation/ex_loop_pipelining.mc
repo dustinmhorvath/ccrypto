@@ -1,7 +1,7 @@
 #include <libmap.h>
 #include <string.h>
 
-//#include <Decrypt.h>
+//#include "Decrypt.h"
 
 #define MAXWORDS 167964
 #define MAXWORDSIZE 20
@@ -9,16 +9,14 @@
 #define NUMSIX 15232
 
 
-// 'dictionarychain' : list of (int64_t)chars representing the dictionary for 'firstwordlength' only
+// 'dictionary' : list of (int64_t)chars representing the dictionary for 'firstwordlength' only
 // 'ciphertext' : char[] of text to be decrypted
 // 'foundkey' : location that the actual brute-forced key will be stored on finish
 // 'numwords' : the number of 'firstwordlength' words stored in 'dictionary'. Tell you how long 'dictionary' is:firstwordlength*numwords
 
-void subr (int64_t dictionarychain[MAXWORDS*MAXWORDSIZE], char ciphertext[], char foundkey[], int numwords, int firstwordlength, int keylength, int64_t *time, int mapnum) {
+void subr (char dictionary[MAXWORDS*MAXWORDSIZE], char ciphertext[], char foundkey[], int numwords, int firstwordlength, int keylength, int64_t *time, int mapnum) {
 
-    OBM_BANK_A (AL, int64_t, MAX_OBM_SIZE)
-    OBM_BANK_B (BL, int64_t, MAX_OBM_SIZE)
-    OBM_BANK_C_2D (CL, char, NUMSIX, 7)
+    OBM_BANK_C_2D (CL, char, NUMSIX, 6 + 1)
 
 
     int64_t t0, t1;
@@ -27,12 +25,12 @@ void subr (int64_t dictionarychain[MAXWORDS*MAXWORDSIZE], char ciphertext[], cha
     Stream_64 SA,SB;
 
     char keyArr[10];
-    char *plaintext;
-    char substring[MAXWORDSIZE];
-    char dictionary[MAXWORDSIZE][MAXWORDSIZE];
+//    char *plaintext;
+//    char substring[MAXWORDSIZE];
+//    char dictionary[MAXWORDSIZE][MAXWORDSIZE];
 
-    //buffered_dma_cpu (CM2OBM, PATH_0, AL, MAP_OBM_stripe (1,"A"), dictionarychain, 1, firstwordlength * numwords);
-    buffered_dma_cpu (CM2OBM, PATH_0, CL, MAP_OBM_stripe (1,"C"), dictionarychain, 1, (6+1)*NUMSIX);
+    //buffered_dma_cpu (CM2OBM, PATH_0, AL, MAP_OBM_stripe (1,"A"), dictionary, 1, firstwordlength * numwords);
+    buffered_dma_cpu (CM2OBM, PATH_0, CL, MAP_OBM_stripe (1,"C"), dictionary, 1, (6 + 1) * NUMSIX);
 
     // CONFIRMED WORKING
     printf("CL starts with %s \n", CL[0]);

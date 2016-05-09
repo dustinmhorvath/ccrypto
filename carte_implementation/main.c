@@ -3,7 +3,7 @@
 #include <string.h>
 
 
-#include <Decrypt.h>
+#include "Decrypt.h"
 
 #define MAXWORDSIZE 20
 #define MAXWORDS 167964
@@ -14,7 +14,7 @@
 #define ENDSIX 28838
 
 
-void subr (int64_t*, char*, char*, int, int, int, int64_t*, int);
+void subr (int64_t**, char*, char*, int, int, int, int64_t*, int);
 
 
 int main (int argc, char *argv[]) {
@@ -63,13 +63,21 @@ int main (int argc, char *argv[]) {
     char* foundkey = malloc(sizeof(char)*MAXWORDSIZE);
     foundkey = "blah";
     
-    
+    int64_t* sixCharInLine = malloc(sizeof(char) * (ENDSIX-STARTSIX + 1) * 7);
+    for(i = STARTSIX; i <= ENDSIX; i++){
+        sixCharInLine[i+0 - STARTSIX] = (int64_t)words[i][0];
+        sixCharInLine[i+1 - STARTSIX] = (int64_t)words[i][1];
+        sixCharInLine[i+2 - STARTSIX] = (int64_t)words[i][2];
+        sixCharInLine[i+3 - STARTSIX] = (int64_t)words[i][3];
+        sixCharInLine[i+4 - STARTSIX] = (int64_t)words[i][4];
+        sixCharInLine[i+5 - STARTSIX] = (int64_t)words[i][5];
+        sixCharInLine[i+6 - STARTSIX] = (int64_t)'\0';
+    }
 
     char** sixCharOnly = malloc(sizeof(char*) * ENDSIX-STARTSIX + 1);
     for(i = 0; i < ENDSIX-STARTSIX + 1; i++){
         sixCharOnly[i] = malloc(sizeof(char) * 7);
     }
-
     for(i = STARTSIX; i <= ENDSIX; i++){
         sixCharOnly[i - STARTSIX][0] = words[i][0];
         sixCharOnly[i - STARTSIX][1] = words[i][1];
@@ -82,10 +90,11 @@ int main (int argc, char *argv[]) {
     }
     printf("sixCharOnly starts with %s \n", sixCharOnly[0]);
      
-    brutishDecrypt("MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", 2, 6, sixCharOnly, ENDSIX-STARTSIX+1);
+    brutishDecrypt("MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", 2, 6, words, MAXWORDS);
 
     map_allocate (1);
-//    subr (sixCharOnly, "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", &foundkey, ENDSIX-STARTSIX+1, 6, 2, &tm, mapnum);
+    //subr (sixCharOnly, "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", &foundkey, ENDSIX-STARTSIX+1, 6, 2, &tm, mapnum);
+    subr (&sixCharOnly[0][0], "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", &foundkey, ENDSIX-STARTSIX+1, 6, 2, &tm, mapnum);
 
     
     //printf ("%lld clocks\n", tm);
