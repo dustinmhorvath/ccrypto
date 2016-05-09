@@ -23,7 +23,7 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
 
     int64_t t0, t1;
     int i, j, k, cont;
-    int notzs;
+    int notzs, found, lettercheck;
     char plaintext[100];
     char substring[MAXWORDSIZE];
     char decryptChar;
@@ -122,18 +122,32 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
 
             decrypted[firstwordlength] = '\0';
 
-            printf("%s \n", decrypted);
-            
-            /*
-               if(bruteSearch(dictionary, plaintext) == 1){
-               printf("Found key %s and plaintext %s\n", keyArr, plaintext);
-               }
-            // Increment the key array
-            //strcpy(keyArr, keyInc(&keyArr[0], keylength));
-            //free(plaintext);
-             */
+            // ~~~~~~~ Check dictionary ~~~~~~~
+            //if(bruteSearch(dictionary, plaintext) == 1){
+            //   printf("Found key %s and plaintext %s\n", keyArr, plaintext);
+            //}
 
+            found = 0;
+            for(i = 0; i < numwords; i++){
+                lettercheck = 1;
+                for(j = 0; j < firstwordlength; j++){
+                    if(CL[i][j] != decrypted[j]){
+                        lettercheck = 0;
+                    }
+                }
+                if(lettercheck == 1){
+                    found = 1;
+                    break;
+                }
+            }
+           
+            if(found == 1){
+                printf("Found key %s and plaintext %s\n", keyArr, decrypted);
+            }
 
+             
+
+            // ~~~~~~~ Increment Key ~~~~~~~
             i = 0;
             keyArr[keylength - 1]++;
             for(i = keylength - 1; i > 0; i--){
