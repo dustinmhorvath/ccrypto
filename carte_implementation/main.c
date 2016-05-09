@@ -14,7 +14,7 @@
 #define ENDSIX 28838
 
 
-void subr (int64_t**, char*, char*, int, int, int, int64_t*, int);
+void subr (int64_t**, char*, int,  char*, int, int, int, int64_t*, int);
 
 
 int main (int argc, char *argv[]) {
@@ -83,7 +83,7 @@ int main (int argc, char *argv[]) {
 
     map_allocate (1);
     //subr (sixCharOnly, "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", &foundkey, ENDSIX-STARTSIX+1, 6, 2, &tm, mapnum);
-    subr (&sixCharOnly[0][0], "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", &foundkey, ENDSIX-STARTSIX+1, 6, 2, &tm, mapnum);
+    subr (&sixCharOnly[0][0], "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", 31, &foundkey, ENDSIX-STARTSIX+1, 6, 2, &tm, mapnum);
 
     
     //printf ("%lld clocks\n", tm);
