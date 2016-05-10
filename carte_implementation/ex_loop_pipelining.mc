@@ -44,13 +44,14 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
     for(i = 0; i < keylength; i++){
         keyArr[i] = 'A';
     }
+    keyArr[keylength] = '\0';
 
     // Convert ciphertext back into chars
     for(i = 0; i <= ciphertextlength; i++){
         ciphertextchars[i] = (char)AL[i];
     }
 
-    //read_timer (&t0);
+    read_timer (&t0);
     
     cont = 1;
     while(cont == 1){

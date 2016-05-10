@@ -61,14 +61,37 @@ int64_t** getShortDictionary(char** dictionary, int wordlength){
     return wordlengthOnly;
 }
 
+int64_t* executeSubroutine(char** words, char* ciphertextchars, int ciphertextlength, char* foundkey, int wordlength, int keylength, int64_t* tm, int mapnum){
+    int start, end, wordcount, i;
+    
+    // Get a new short dictionary
+    int64_t** wordlengthOnly = getShortDictionary(words, wordlength);
+
+    start = getStart(words, wordlength);
+    end = getEnd(words, wordlength);
+    wordcount = end - start + 1;   
+    int64_t* ciphertext = malloc(sizeof(int64_t) * ciphertextlength);
+    for(i = 0; i < ciphertextlength; i++){
+        ciphertext[i] = (int64_t)ciphertextchars[i];
+    }
+
+    // Decrypt on MAP
+    map_allocate (1);
+    subr (&wordlengthOnly[0][0], ciphertext, 31, &foundkey, wordcount, wordlength, keylength, &tm, mapnum);
+    map_free (1);
+    free(wordlengthOnly);
+
+    return tm;
+}
 
 int main (int argc, char *argv[]) {
     FILE  *keyFile, *dictionaryFile;
     int i, j, num;
     int64_t tm, t0, t1;
     int mapnum = 0;
-    int start, end, wordlength, wordcount, keylength;
+    int start, end, wordlength, wordcount, keylength, ciphertextlength;
     char line[25];
+    char *ciphertextchars = malloc(sizeof(char)*MAXCIPHERTEXTLENGTH);
 
     // Declare static array, since the size is known
     char** words = malloc(sizeof(char*) * MAXWORDS + 5);
@@ -95,9 +118,10 @@ int main (int argc, char *argv[]) {
 
     char* foundkey = malloc(sizeof(char)*MAXWORDSIZE);
 
-    int ciphertextlength = 32; // Includes null char
-    char ciphertextchars[MAXCIPHERTEXTLENGTH] = "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX\0";
-    
+    // CASE 1
+    // These arguments are all thta make each brute force unique
+    ciphertextchars = "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX\0";
+    ciphertextlength = strlen(ciphertextchars)+1; // Include null char
     wordlength = 6; 
     keylength = 2;
     
@@ -107,28 +131,31 @@ int main (int argc, char *argv[]) {
     t1 = clock();
     printf("%lld clocks\n", t1-t0); 
 
-    // Get a new short dictionary
-    int64_t** sixCharOnly = getShortDictionary(words, wordlength);
-
-    start = getStart(words, wordlength);
-    end = getEnd(words, wordlength);
-    wordcount = end - start + 1;   
-    int64_t* ciphertext = malloc(sizeof(int64_t) * ciphertextlength);
-    for(i = 0; i < ciphertextlength; i++){
-        ciphertext[i] = (int64_t)ciphertextchars[i];
-    }
-
-    // Decrypt on MAP
-    map_allocate (1);
-    subr (&sixCharOnly[0][0], ciphertext, 31, &foundkey, wordcount, wordlength, keylength, &tm, mapnum);
-    map_free (1);
-    free(sixCharOnly);
-
+    // Decrypt using MAP subroutine
+    tm = executeSubroutine(words, ciphertextchars, ciphertextlength, &foundkey, wordlength, keylength, &tm, mapnum);
     
     printf ("%lld clocks\n", tm);
 
 
+    // CASE 2
+//    ciphertextchars = "MTZHZEOQKASVBDOWMWMKMNYIIHVWPEXJA\0";
+//    wordlength = 10;
+//    keylength = 4;
+    ciphertextchars = "OOPCULNWFRCFQAQJGPNARMEYUODYOUNRGWORQEPVARCEPBBSCEQYEARAJUYGWWYACYWBPRNEJBMDTEAEYCCFJNENSGWAQRTSJTGXNRQRMDGFEEPHSJRGFCFMACCB\0";
+    ciphertextlength = strlen(ciphertextchars)+1;
+    wordlength = 7;
+    keylength = 3;
 
+    // Decrypt using conventional brute-force
+    t0 = clock();
+    brutishDecrypt(ciphertextchars, keylength, wordlength, words, MAXWORDS);
+    t1 = clock();
+    printf("%lld clocks\n", t1-t0); 
+
+    // Decrypt using MAP subroutine
+    tm = executeSubroutine(words, ciphertextchars, ciphertextlength, &foundkey, wordlength, keylength, &tm, mapnum);
+
+    printf ("%lld clocks\n", tm);
 
 
 
