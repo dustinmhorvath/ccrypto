@@ -7,6 +7,7 @@
 
 #define MAXWORDSIZE 20
 #define MAXWORDS 167964
+
 #define STARTTWO 0
 #define ENDTWO 95
 
@@ -16,13 +17,62 @@
 
 void subr (int64_t**, int64_t*, int,  char*, int, int, int, int64_t*, int);
 
+int getStart(char** dictionary, int wordlength){
+    int start = 0;
+    int i;
+    for(i = 0; i < MAXWORDS; i++){
+        if(strlen(dictionary[i]) == wordlength && start == 0){
+            start = i;
+            break;
+        }
+    }
+    return start;
+}
+
+int getEnd(char** dictionary, int wordlength){
+    int start = 0;
+    int end = 0;
+    int i;
+    for(i = 0; i < MAXWORDS; i++){
+        if(strlen(dictionary[i]) == wordlength && start == 0){
+            start = i;
+        }
+        else if(strlen(dictionary[i]) > wordlength){
+            end = i-1;
+            break;
+        }
+    }
+    return end;
+}
+
+int64_t** getShortDictionary(char** dictionary, int wordlength){
+    int i, j, start, end, wordcount;
+    start = getStart(dictionary, wordlength);
+    end = getEnd(dictionary, wordlength);
+    wordcount = end - start + 1;
+    
+    int64_t** wordlengthOnly = malloc(sizeof(int64_t*) * wordcount);
+    
+    for(i = 0; i < wordcount; i++){
+        wordlengthOnly[i] = malloc(sizeof(int64_t) * wordlength + 1);
+    }
+    for(i = start; i <= end; i++){
+        for(j = 0; j < wordlength; j++){
+        wordlengthOnly[i - start][j] = (int64_t)dictionary[i][j];
+        }
+        wordlengthOnly[i - start][wordlength] = (int64_t)'\0';
+    }
+    return wordlengthOnly;
+}
+
 
 int main (int argc, char *argv[]) {
     FILE  *keyFile, *dictionaryFile;
     int i, j, num;
     int64_t *A, *B, *C, *D;
-    int64_t tm;
+    int64_t tm, t0, t1;
     int mapnum = 0;
+    int start, end, wordlength, wordcount;
     char line[25];
     size_t len = 0;
     size_t count;
@@ -50,37 +100,22 @@ int main (int argc, char *argv[]) {
     // Close dictionary file
     fclose(dictionaryFile);
 
-    // For testing. Seems to be functioning adequately.
-    /*
-       for(i = 0; i < 4; i++){
-       printf ("%s \n", words[i]);
-       }
-       */
 
-
-    // call the MAP routine
-    //subr (A, B, C, D, num, &tm, mapnum);
     char* foundkey = malloc(sizeof(char)*MAXWORDSIZE);
-    foundkey = "blah";
-   
-    int64_t** sixCharOnly = malloc(sizeof(int64_t*) * ENDSIX-STARTSIX + 1);
-    for(i = 0; i < ENDSIX-STARTSIX + 1; i++){
-        sixCharOnly[i] = malloc(sizeof(int64_t) * 7);
-    }
-    for(i = STARTSIX; i <= ENDSIX; i++){
-        sixCharOnly[i - STARTSIX][0] = (int64_t)words[i][0];
-        sixCharOnly[i - STARTSIX][1] = (int64_t)words[i][1];
-        sixCharOnly[i - STARTSIX][2] = (int64_t)words[i][2];
-        sixCharOnly[i - STARTSIX][3] = (int64_t)words[i][3];
-        sixCharOnly[i - STARTSIX][4] = (int64_t)words[i][4];
-        sixCharOnly[i - STARTSIX][5] = (int64_t)words[i][5];
-        sixCharOnly[i - STARTSIX][6] = (int64_t)'\0';
 
-    }
-    printf("sixCharOnly starts with %c \n", sixCharOnly[0][0]);
-     
+    t0 = clock();
     brutishDecrypt("MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", 2, 6, words, MAXWORDS);
+    t1 = clock();
+    printf("%lld clocks\n", t1-t0); 
 
+
+    wordlength = 6;
+    
+    int64_t** sixCharOnly = getShortDictionary(words, wordlength);
+
+    start = getStart(words, wordlength);
+    end = getEnd(words, wordlength);
+    wordcount = end - start + 1;   
     char ciphertextchars[32] = "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX\0";
     int64_t* ciphertext = malloc(sizeof(int64_t) * 32);
     for(i = 0; i < 32; i++){
@@ -88,8 +123,8 @@ int main (int argc, char *argv[]) {
     }
 
     map_allocate (1);
-    //subr (sixCharOnly, "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", &foundkey, ENDSIX-STARTSIX+1, 6, 2, &tm, mapnum);
-    subr (&sixCharOnly[0][0], ciphertext, 31, &foundkey, ENDSIX-STARTSIX+1, 6, 2, &tm, mapnum);
+    subr (&sixCharOnly[0][0], ciphertext, 31, &foundkey, wordcount, wordlength, 2, &tm, mapnum);
+    map_free (1);
 
     
     //printf ("%lld clocks\n", tm);
@@ -98,7 +133,6 @@ int main (int argc, char *argv[]) {
 
 
 
-    map_free (1);
 
     exit(0);
 }

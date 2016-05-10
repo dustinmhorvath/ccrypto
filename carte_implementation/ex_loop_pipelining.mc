@@ -7,6 +7,7 @@
 
 #define MAXWORDS 167964
 #define MAXWORDSIZE 20
+#define MAXCIPHERTEXTLENGTH 200
 
 #define NUMSIX 15232
 
@@ -24,12 +25,10 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
     int64_t t0, t1;
     int i, j, k, cont;
     int notzs, found, lettercheck;
-    char plaintext[100];
     char substring[MAXWORDSIZE];
-    char decryptChar;
     char decrypted[MAXWORDSIZE + 1];
     char ciphChar;
-    char ciphertextchars[100];
+    char ciphertextchars[MAXCIPHERTEXTLENGTH];
 
     Stream_64 SA,SB;
 
@@ -53,7 +52,6 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
 
     printf("Attempting MAP decryption...\n");
 
-    read_timer (&t0);
      
     // Start with all A's
     for(i = 0; i < keylength; i++){
@@ -65,6 +63,7 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
         ciphertextchars[i] = (char)AL[i];
     }
 
+    //read_timer (&t0);
     
     cont = 1;
     while(cont == 1){
@@ -84,7 +83,6 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
 
         else{
 
-
             // ~~~~~~~DECRYPT BLOCK~~~~~~~
             for(i = 0, j = 0; i < firstwordlength; i++){
                 // Read in a ciphertext character
@@ -102,23 +100,15 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
                     continue;
                 }
 
-                decryptChar = (char)((ciphChar - keyArr[j] + 26) % 26 + 'A');
-
-                //strcat(decrypted, decryptChar);
-                decrypted[i] = decryptChar;
+                decrypted[i] = (char)((ciphChar - keyArr[j] + 26) % 26 + 'A');
 
                 j = (j + 1) % keylength;
 
             }
-
-
-
             decrypted[firstwordlength] = '\0';
 
+
             // ~~~~~~~ Check dictionary ~~~~~~~
-            //if(bruteSearch(dictionary, plaintext) == 1){
-            //   printf("Found key %s and plaintext %s\n", keyArr, plaintext);
-            //}
 
             found = 0;
             for(i = 0; i < numwords; i++){
@@ -132,8 +122,7 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
                     found = 1;
                     break;
                 }
-            }
-           
+            }           
             if(found == 1){
                 printf("Found key %s and plaintext %s\n", keyArr, decrypted);
             }
