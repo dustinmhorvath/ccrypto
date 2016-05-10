@@ -51,13 +51,15 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
     }
     ciphertextchars[ciphertextlength] = '\0';
 
+    // For testing
+    /*
     printf("CL contains %c\n", CL[2][0]);
     printf("CL contains %c\n", CL[2][1]);
     printf("CL contains %c\n", CL[2][2]);
     printf("CL contains %c\n", CL[2][3]);
     printf("CL contains %c\n", CL[2][4]);
     printf("CL contains %c\n", CL[2][5]);
-
+    */
 
     read_timer (&t0);
     

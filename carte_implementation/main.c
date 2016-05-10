@@ -78,9 +78,7 @@ int64_t* executeSubroutine(char** words, char* ciphertextchars, int ciphertextle
     }
 
     // Decrypt on MAP
-    map_allocate (1);
     subr (&wordlengthOnly[0][0], ciphertext, ciphertextlength, &foundkey, wordcount, wordlength, keylength, &tm, mapnum);
-    map_free (1);
     free(wordlengthOnly);
 
     return tm;
@@ -120,6 +118,8 @@ int main (int argc, char *argv[]) {
 
     char* foundkey = malloc(sizeof(char)*MAXWORDSIZE);
 
+    map_allocate (1);
+    
     // CASE 1
     // These arguments are all thta make each brute force unique
     ciphertextchars = "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX\0";
@@ -174,5 +174,6 @@ int main (int argc, char *argv[]) {
     printf ("%lld clocks\n", tm);
 
 
+    map_free (1);
     exit(0);
 }
