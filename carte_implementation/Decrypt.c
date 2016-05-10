@@ -27,8 +27,6 @@ void keyInc(char *key, int keylength){
             key[i-1]++;
         }
     }
-    
-    //return key;
 }
 
 int bruteSearch(char *tofind, char** dictionary, int numwords){
@@ -88,7 +86,7 @@ void brutishDecrypt(char *ciphertext, int keylength, int firstwordlength, char *
     char *plaintext;
     char *substring;
     int i = 0;
-    char *keyArr = malloc(sizeof(char)*keylength);
+    char *keyArr = malloc(sizeof(char)*(keylength+1)); // Add one for null char
 
     printf("Attempting decryption...\n");
 
@@ -98,6 +96,7 @@ void brutishDecrypt(char *ciphertext, int keylength, int firstwordlength, char *
     for(i = 0; i < keylength; i++){
         keyArr[i] = 'A';
     }
+    keyArr[keylength] = '\0';
 
     //start = std::clock();
     while(isZs(keyArr, keylength) == 0){
@@ -108,10 +107,9 @@ void brutishDecrypt(char *ciphertext, int keylength, int firstwordlength, char *
         substring[firstwordlength] = '\0';
         
         plaintext = decrypt(substring, firstwordlength, keyArr, keylength);
-        //printf("%s \n", plaintext);
 
         if(bruteSearch(plaintext, dictionary, numwords) == 1){
-            printf("Found key %s and plaintext %s\n", keyArr, plaintext);
+            printf("Found key %s and plaintext %s\n", &keyArr[0], plaintext);
         }
 
 
