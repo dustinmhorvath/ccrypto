@@ -140,9 +140,6 @@ int main (int argc, char *argv[]) {
 
 
     // CASE 2
-//    ciphertextchars = "MTZHZEOQKASVBDOWMWMKMNYIIHVWPEXJA\0";
-//    wordlength = 10;
-//    keylength = 4;
     ciphertextchars = "OOPCULNWFRCFQAQJGPNARMEYUODYOUNRGWORQEPVARCEPBBSCEQYEARAJUYGWWYACYWBPRNEJBMDTEAEYCCFJNENSGWAQRTSJTGXNRQRMDGFEEPHSJRGFCFMACCB\0";
     ciphertextlength = strlen(ciphertextchars);
     wordlength = 7;
@@ -159,6 +156,22 @@ int main (int argc, char *argv[]) {
 
     printf ("%lld clocks\n", tm);
 
+    // CASE 3    
+    ciphertextchars = "MTZHZEOQKASVBDOWMWMKMNYIIHVWPEXJA\0";
+    ciphertextlength = strlen(ciphertextchars);
+    wordlength = 10;
+    keylength = 4;
+
+    // Decrypt using conventional brute-force
+    t0 = clock();
+    brutishDecrypt(ciphertextchars, keylength, wordlength, words, MAXWORDS);
+    t1 = clock();
+    printf("%lld clocks\n", t1-t0); 
+
+    // Decrypt using MAP subroutine
+    tm = executeSubroutine(words, ciphertextchars, ciphertextlength, &foundkey, wordlength, keylength, &tm, mapnum);
+
+    printf ("%lld clocks\n", tm);
 
 
     exit(0);
