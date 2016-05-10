@@ -8,11 +8,6 @@
 #define MAXWORDSIZE 20
 #define MAXWORDS 167964
 
-#define STARTTWO 0
-#define ENDTWO 95
-
-#define STARTSIX 13607
-#define ENDSIX 28838
 
 
 void subr (int64_t**, int64_t*, int,  char*, int, int, int, int64_t*, int);
@@ -69,14 +64,10 @@ int64_t** getShortDictionary(char** dictionary, int wordlength){
 int main (int argc, char *argv[]) {
     FILE  *keyFile, *dictionaryFile;
     int i, j, num;
-    int64_t *A, *B, *C, *D;
     int64_t tm, t0, t1;
     int mapnum = 0;
     int start, end, wordlength, wordcount;
     char line[25];
-    size_t len = 0;
-    size_t count;
-    ssize_t read = 0;
 
     // Declare static array, since the size is known
     char** words = malloc(sizeof(char*) * MAXWORDS + 5);
@@ -125,9 +116,10 @@ int main (int argc, char *argv[]) {
     map_allocate (1);
     subr (&sixCharOnly[0][0], ciphertext, 31, &foundkey, wordcount, wordlength, 2, &tm, mapnum);
     map_free (1);
+    free(sixCharOnly);
 
     
-    //printf ("%lld clocks\n", tm);
+    printf ("%lld clocks\n", tm);
 
 
 

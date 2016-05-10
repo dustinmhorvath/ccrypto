@@ -3,13 +3,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//#include "KeyInc.mc"
 
 #define MAXWORDS 167964
-#define MAXWORDSIZE 20
+#define MAXWORDSIZE 16
 #define MAXCIPHERTEXTLENGTH 200
 
-#define NUMSIX 15232
 
 
 // 'dictionary' : list of (int64_t)chars representing the dictionary for 'firstwordlength' only
@@ -35,23 +33,12 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
     char keyArr[10];
  
     OBM_BANK_A (AL, int64_t, MAX_OBM_SIZE)
-    OBM_BANK_C_2D (CL, int64_t,  NUMSIX, 8)
+    OBM_BANK_C_2D (CL, int64_t,  MAX_OBM_SIZE/16, 16)
 
-    buffered_dma_cpu (CM2OBM, PATH_0, CL, MAP_OBM_stripe (1,"C"), dictionary, 1, (6 + 0) * NUMSIX * sizeof(int64_t));
+    buffered_dma_cpu (CM2OBM, PATH_0, CL, MAP_OBM_stripe (1,"C"), dictionary, 1, (firstwordlength) * numwords * sizeof(int64_t));
     buffered_dma_cpu (CM2OBM, PATH_0, AL, MAP_OBM_stripe (1,"A"), ciphertext, 1, (ciphertextlength + 1) * sizeof(int64_t));
 
-    // CONFIRMED WORKING
-    /*
-    printf("CL starts with %c \n", CL[3][0]);
-    printf("CL starts with %c \n", CL[3][1]);
-    printf("CL starts with %c \n", CL[3][2]);
-    printf("CL starts with %c \n", CL[3][3]);
-    printf("CL starts with %c \n", CL[3][4]);
-    printf("CL starts with %c \n", CL[3][5]);
-    */
-
     printf("Attempting MAP decryption...\n");
-
      
     // Start with all A's
     for(i = 0; i < keylength; i++){
@@ -84,7 +71,7 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
         else{
 
             // ~~~~~~~DECRYPT BLOCK~~~~~~~
-            for(i = 0, j = 0; i < firstwordlength; i++){
+            for(i = 0, j = 0; i < ciphertextlength; i++){
                 // Read in a ciphertext character
                 ciphChar = ciphertextchars[i];
                 // Force to uppercase
