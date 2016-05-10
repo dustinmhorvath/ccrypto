@@ -5,7 +5,7 @@
 
 #include "Decrypt.h"
 
-#define MAXWORDSIZE 20
+#define MAXWORDSIZE 16
 #define MAXWORDS 167964
 #define MAXCIPHERTEXTLENGTH 200
 
@@ -50,13 +50,15 @@ int64_t** getShortDictionary(char** dictionary, int wordlength){
     int64_t** wordlengthOnly = malloc(sizeof(int64_t*) * wordcount);
     
     for(i = 0; i < wordcount; i++){
-        wordlengthOnly[i] = malloc(sizeof(int64_t) * wordlength + 1);
+        wordlengthOnly[i] = malloc(sizeof(int64_t) * MAXWORDSIZE);
     }
     for(i = start; i <= end; i++){
         for(j = 0; j < wordlength; j++){
-        wordlengthOnly[i - start][j] = (int64_t)dictionary[i][j];
+            wordlengthOnly[i - start][j] = (int64_t)dictionary[i][j];
         }
-        wordlengthOnly[i - start][wordlength] = (int64_t)'\0';
+        for(j = wordlength; j < MAXWORDSIZE; j++){
+            wordlengthOnly[i - start][j] = (int64_t)'\0';
+        }
     }
     return wordlengthOnly;
 }
@@ -70,14 +72,14 @@ int64_t* executeSubroutine(char** words, char* ciphertextchars, int ciphertextle
     start = getStart(words, wordlength);
     end = getEnd(words, wordlength);
     wordcount = end - start + 1;   
-    int64_t* ciphertext = malloc(sizeof(int64_t) * ciphertextlength);
+    int64_t* ciphertext = malloc(sizeof(int64_t) * (ciphertextlength+1)); // Extra for null char
     for(i = 0; i < ciphertextlength; i++){
         ciphertext[i] = (int64_t)ciphertextchars[i];
     }
 
     // Decrypt on MAP
     map_allocate (1);
-    subr (&wordlengthOnly[0][0], ciphertext, 31, &foundkey, wordcount, wordlength, keylength, &tm, mapnum);
+    subr (&wordlengthOnly[0][0], ciphertext, ciphertextlength, &foundkey, wordcount, wordlength, keylength, &tm, mapnum);
     map_free (1);
     free(wordlengthOnly);
 
@@ -94,8 +96,8 @@ int main (int argc, char *argv[]) {
     char *ciphertextchars = malloc(sizeof(char)*MAXCIPHERTEXTLENGTH);
 
     // Declare static array, since the size is known
-    char** words = malloc(sizeof(char*) * MAXWORDS + 5);
-    for(i = 0; i < MAXWORDS + 5; i++){
+    char** words = malloc(sizeof(char*) * MAXWORDS);
+    for(i = 0; i < MAXWORDS; i++){
         words[i] = malloc(sizeof(char) * MAXWORDSIZE);
     }
 
@@ -121,7 +123,7 @@ int main (int argc, char *argv[]) {
     // CASE 1
     // These arguments are all thta make each brute force unique
     ciphertextchars = "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX\0";
-    ciphertextlength = strlen(ciphertextchars)+1; // Include null char
+    ciphertextlength = strlen(ciphertextchars);
     wordlength = 6; 
     keylength = 2;
     
@@ -142,7 +144,7 @@ int main (int argc, char *argv[]) {
 //    wordlength = 10;
 //    keylength = 4;
     ciphertextchars = "OOPCULNWFRCFQAQJGPNARMEYUODYOUNRGWORQEPVARCEPBBSCEQYEARAJUYGWWYACYWBPRNEJBMDTEAEYCCFJNENSGWAQRTSJTGXNRQRMDGFEEPHSJRGFCFMACCB\0";
-    ciphertextlength = strlen(ciphertextchars)+1;
+    ciphertextlength = strlen(ciphertextchars);
     wordlength = 7;
     keylength = 3;
 

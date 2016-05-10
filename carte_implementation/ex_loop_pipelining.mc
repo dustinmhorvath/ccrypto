@@ -23,8 +23,8 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
     int64_t t0, t1;
     int i, j, k, cont;
     int notzs, found, lettercheck;
-    char substring[MAXWORDSIZE];
-    char decrypted[MAXWORDSIZE + 1];
+    //char substring[MAXWORDSIZE];
+    char decrypted[MAXCIPHERTEXTLENGTH];
     char ciphChar;
     char ciphertextchars[MAXCIPHERTEXTLENGTH];
 
@@ -33,10 +33,10 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
     char keyArr[10];
  
     OBM_BANK_A (AL, int64_t, MAX_OBM_SIZE)
-    OBM_BANK_C_2D (CL, int64_t,  MAX_OBM_SIZE/16, 16)
+    OBM_BANK_C_2D (CL, int64_t,  MAX_OBM_SIZE/MAXWORDSIZE, MAXWORDSIZE)
 
-    buffered_dma_cpu (CM2OBM, PATH_0, CL, MAP_OBM_stripe (1,"C"), dictionary, 1, (firstwordlength) * numwords * sizeof(int64_t));
-    buffered_dma_cpu (CM2OBM, PATH_0, AL, MAP_OBM_stripe (1,"A"), ciphertext, 1, (ciphertextlength + 1) * sizeof(int64_t));
+    buffered_dma_cpu (CM2OBM, PATH_0, CL, MAP_OBM_stripe (1,"C"), dictionary, 1, (MAXWORDSIZE) * numwords * sizeof(int64_t));
+    buffered_dma_cpu (CM2OBM, PATH_0, AL, MAP_OBM_stripe (1,"A"), ciphertext, 1, ciphertextlength * sizeof(int64_t));
 
     printf("Attempting MAP decryption...\n");
      
@@ -47,9 +47,20 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
     keyArr[keylength] = '\0';
 
     // Convert ciphertext back into chars
-    for(i = 0; i <= ciphertextlength; i++){
+    for(i = 0; i < ciphertextlength; i++){
         ciphertextchars[i] = (char)AL[i];
     }
+    ciphertextchars[ciphertextlength] = '\0';
+
+    printf("CL contains %c", CL[1][0]);
+    printf("%c", CL[1][1]);
+    printf("%c", CL[1][2]);
+    printf("%c", CL[1][3]);
+    printf("%c", CL[1][4]);
+    printf("%c", CL[1][5]);
+    printf("%c", CL[1][6]);
+    printf("%c\n", CL[1][7]);
+
 
     read_timer (&t0);
     
@@ -93,7 +104,7 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
                 j = (j + 1) % keylength;
 
             }
-            decrypted[firstwordlength] = '\0';
+            //decrypted[firstwordlength] = '\0';
 
 
             // ~~~~~~~ Check dictionary ~~~~~~~
