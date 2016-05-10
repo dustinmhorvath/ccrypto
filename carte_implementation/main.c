@@ -7,6 +7,7 @@
 
 #define MAXWORDSIZE 20
 #define MAXWORDS 167964
+#define MAXCIPHERTEXTLENGTH 200
 
 
 
@@ -66,7 +67,7 @@ int main (int argc, char *argv[]) {
     int i, j, num;
     int64_t tm, t0, t1;
     int mapnum = 0;
-    int start, end, wordlength, wordcount;
+    int start, end, wordlength, wordcount, keylength;
     char line[25];
 
     // Declare static array, since the size is known
@@ -94,27 +95,32 @@ int main (int argc, char *argv[]) {
 
     char* foundkey = malloc(sizeof(char)*MAXWORDSIZE);
 
+    int ciphertextlength = 32; // Includes null char
+    char ciphertextchars[MAXCIPHERTEXTLENGTH] = "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX\0";
+    
+    wordlength = 6; 
+    keylength = 2;
+    
+    // Decrypt using conventional brute-force
     t0 = clock();
-    brutishDecrypt("MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX", 2, 6, words, MAXWORDS);
+    brutishDecrypt(ciphertextchars, keylength, wordlength, words, MAXWORDS);
     t1 = clock();
     printf("%lld clocks\n", t1-t0); 
 
-
-    wordlength = 6;
-    
+    // Get a new short dictionary
     int64_t** sixCharOnly = getShortDictionary(words, wordlength);
 
     start = getStart(words, wordlength);
     end = getEnd(words, wordlength);
     wordcount = end - start + 1;   
-    char ciphertextchars[32] = "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX\0";
-    int64_t* ciphertext = malloc(sizeof(int64_t) * 32);
-    for(i = 0; i < 32; i++){
+    int64_t* ciphertext = malloc(sizeof(int64_t) * ciphertextlength);
+    for(i = 0; i < ciphertextlength; i++){
         ciphertext[i] = (int64_t)ciphertextchars[i];
     }
 
+    // Decrypt on MAP
     map_allocate (1);
-    subr (&sixCharOnly[0][0], ciphertext, 31, &foundkey, wordcount, wordlength, 2, &tm, mapnum);
+    subr (&sixCharOnly[0][0], ciphertext, 31, &foundkey, wordcount, wordlength, keylength, &tm, mapnum);
     map_free (1);
     free(sixCharOnly);
 
