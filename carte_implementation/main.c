@@ -11,7 +11,7 @@
 
 
 
-void subr (int64_t**, int64_t*, int,  char*, int, int, int, int64_t*, int);
+void subr (int64_t**, int64_t*, int,  int64_t*, int, int, int, int64_t*, int);
 
 int getStart(char** dictionary, int wordlength){
     int start = 0;
@@ -63,7 +63,15 @@ int64_t** getShortDictionary(char** dictionary, int wordlength){
     return wordlengthOnly;
 }
 
-int64_t* executeSubroutine(char** words, char* ciphertextchars, int ciphertextlength, char* foundkey, int wordlength, int keylength, int64_t* tm, int mapnum){
+void freeShortDictionary (int64_t** wordlengthOnly, int wordcount){
+    int i;
+    for(i = 0; i < wordcount; i++){
+        free(wordlengthOnly[i]);
+    }
+    free(wordlengthOnly);
+}
+
+int64_t* executeSubroutine(char** words, char* ciphertextchars, int ciphertextlength, int64_t* foundkey, int wordlength, int keylength, int64_t* tm, int mapnum){
     int start, end, wordcount, i;
     
     // Get a new short dictionary
@@ -78,9 +86,26 @@ int64_t* executeSubroutine(char** words, char* ciphertextchars, int ciphertextle
     }
 
     // Decrypt on MAP
-    subr (&wordlengthOnly[0][0], ciphertext, ciphertextlength, &foundkey, wordcount, wordlength, keylength, &tm, mapnum);
+    subr (&wordlengthOnly[0][0], ciphertext, ciphertextlength, foundkey, wordcount, wordlength, keylength, &tm, mapnum);
     free(wordlengthOnly);
+ 
+    char *key = malloc(sizeof(char) * (keylength+1));
+    key[keylength] = '\0';
 
+    printf("Subroutine returned key '");
+    for(i = 0; i < keylength; i++){
+        printf("%c", (char)(foundkey[i]) );
+        key[i] = (char)foundkey[i];
+    } 
+    printf("'\n");
+
+    printf("%s \n", decrypt( ciphertextchars, ciphertextlength, key, keylength ));
+ 
+    printf ("%lld clocks\n", tm);
+
+    //freeShortDictionary(wordlengthOnly, wordcount);
+    free(ciphertext);
+    free(key);
     return tm;
 }
 
@@ -92,6 +117,8 @@ int main (int argc, char *argv[]) {
     int start, end, wordlength, wordcount, keylength, ciphertextlength;
     char line[25];
     char *ciphertextchars = malloc(sizeof(char)*MAXCIPHERTEXTLENGTH);
+    //int64_t* foundkey = malloc(MAXWORDSIZE * sizeof (int64_t));
+    int64_t* foundkey = Cache_Aligned_Allocate(MAXWORDSIZE * sizeof(int64_t));
 
     // Declare static array, since the size is known
     char** words = malloc(sizeof(char*) * MAXWORDS);
@@ -115,9 +142,6 @@ int main (int argc, char *argv[]) {
     // Close dictionary file
     fclose(dictionaryFile);
 
-
-    char* foundkey = malloc(sizeof(char)*MAXWORDSIZE);
-
     map_allocate (1);
     
     // CASE 1
@@ -131,13 +155,11 @@ int main (int argc, char *argv[]) {
     t0 = clock();
     brutishDecrypt(ciphertextchars, keylength, wordlength, words, MAXWORDS);
     t1 = clock();
-    printf("%lld clocks\n", t1-t0); 
+    printf("%d clocks\n", t1-t0); 
 
     // Decrypt using MAP subroutine
-    tm = executeSubroutine(words, ciphertextchars, ciphertextlength, &foundkey, wordlength, keylength, &tm, mapnum);
+    executeSubroutine(words, ciphertextchars, ciphertextlength, foundkey, wordlength, keylength, &tm, mapnum);
     
-    printf ("%lld clocks\n", tm);
-
 
     // CASE 2
     ciphertextchars = "OOPCULNWFRCFQAQJGPNARMEYUODYOUNRGWORQEPVARCEPBBSCEQYEARAJUYGWWYACYWBPRNEJBMDTEAEYCCFJNENSGWAQRTSJTGXNRQRMDGFEEPHSJRGFCFMACCB\0";
@@ -152,9 +174,7 @@ int main (int argc, char *argv[]) {
     printf("%lld clocks\n", t1-t0); 
 
     // Decrypt using MAP subroutine
-    tm = executeSubroutine(words, ciphertextchars, ciphertextlength, &foundkey, wordlength, keylength, &tm, mapnum);
-
-    printf ("%lld clocks\n", tm);
+    executeSubroutine(words, ciphertextchars, ciphertextlength, foundkey, wordlength, keylength, &tm, mapnum);
 
     // CASE 3    
     ciphertextchars = "MTZHZEOQKASVBDOWMWMKMNYIIHVWPEXJA\0";
@@ -169,9 +189,7 @@ int main (int argc, char *argv[]) {
     printf("%lld clocks\n", t1-t0); 
 
     // Decrypt using MAP subroutine
-    tm = executeSubroutine(words, ciphertextchars, ciphertextlength, &foundkey, wordlength, keylength, &tm, mapnum);
-
-    printf ("%lld clocks\n", tm);
+    executeSubroutine(words, ciphertextchars, ciphertextlength, foundkey, wordlength, keylength, &tm, mapnum);
 
 
     map_free (1);
