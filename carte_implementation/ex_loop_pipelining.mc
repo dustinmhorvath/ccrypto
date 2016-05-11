@@ -15,12 +15,10 @@
 // 'foundkey' : location that the actual brute-forced key will be stored on finish
 // 'numwords' : the number of 'firstwordlength' words stored in 'dictionary'. Tell you how long 'dictionary' is:firstwordlength*numwords
 
-char* keyIncrement(char *key, int keylength);
-
-void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int ciphertextlength, char foundkey[], int numwords, int firstwordlength, int keylength, int64_t *time, int mapnum) {
+void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int ciphertextlength, int64_t foundkey[], int numwords, int firstwordlength, int keylength, int64_t *time, int mapnum) {
 
 
-    int64_t t0, t1;
+    int64_t t0, t1, keyIndex;
     int i, j, k, cont;
     int notzs, found, lettercheck;
     char decrypted[MAXCIPHERTEXTLENGTH];
@@ -31,11 +29,13 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
 
     char keyArr[10];
  
-    OBM_BANK_A (AL, int64_t, MAX_OBM_SIZE)
-    OBM_BANK_C_2D (CL, int64_t,  MAX_OBM_SIZE/(MAXWORDSIZE+2), MAXWORDSIZE+2)
+    OBM_BANK_A (CIPHERTEXT_L, int64_t, MAX_OBM_SIZE)
+    OBM_BANK_B (FOUNDKEY_L, int64_t, MAX_OBM_SIZE)
+    OBM_BANK_C_2D (DICTIONARY_L, int64_t,  MAX_OBM_SIZE/(MAXWORDSIZE+2), MAXWORDSIZE+2)
 
-    buffered_dma_cpu (CM2OBM, PATH_0, CL, MAP_OBM_stripe (1,"C"), dictionary, 1, (MAXWORDSIZE) * numwords * sizeof(int64_t));
-    buffered_dma_cpu (CM2OBM, PATH_0, AL, MAP_OBM_stripe (1,"A"), ciphertext, 1, ciphertextlength * sizeof(int64_t));
+    buffered_dma_cpu (CM2OBM, PATH_0, DICTIONARY_L, MAP_OBM_stripe (1,"C"), dictionary, 1, (MAXWORDSIZE) * numwords * sizeof(int64_t));
+    buffered_dma_cpu (CM2OBM, PATH_0, CIPHERTEXT_L, MAP_OBM_stripe (1,"A"), ciphertext, 1, ciphertextlength * sizeof(int64_t));
+    buffered_dma_cpu (CM2OBM, PATH_0, FOUNDKEY_L, MAP_OBM_stripe (1,"B"), foundkey, 1, (keylength+1) * sizeof(int64_t));
 
     printf("Attempting MAP decryption...\n");
      
@@ -47,18 +47,18 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
 
     // Convert ciphertext back into chars
     for(i = 0; i < ciphertextlength; i++){
-        ciphertextchars[i] = (char)AL[i];
+        ciphertextchars[i] = (char)CIPHERTEXT_L[i];
     }
     ciphertextchars[ciphertextlength] = '\0';
 
     // For testing
     /*
-    printf("CL contains %c\n", CL[2][0]);
-    printf("CL contains %c\n", CL[2][1]);
-    printf("CL contains %c\n", CL[2][2]);
-    printf("CL contains %c\n", CL[2][3]);
-    printf("CL contains %c\n", CL[2][4]);
-    printf("CL contains %c\n", CL[2][5]);
+    printf("DICTIONARY_L contains %c\n", DICTIONARY_L[2][0]);
+    printf("DICTIONARY_L contains %c\n", DICTIONARY_L[2][1]);
+    printf("DICTIONARY_L contains %c\n", DICTIONARY_L[2][2]);
+    printf("DICTIONARY_L contains %c\n", DICTIONARY_L[2][3]);
+    printf("DICTIONARY_L contains %c\n", DICTIONARY_L[2][4]);
+    printf("DICTIONARY_L contains %c\n", DICTIONARY_L[2][5]);
     */
 
     read_timer (&t0);
@@ -82,18 +82,19 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
         else{
 
             // ~~~~~~~DECRYPT BLOCK~~~~~~~
+            keyIndex = 0;
             for(i = 0, j = 0; i < ciphertextlength; i++){
+                
                 // Read in a ciphertext character
                 ciphChar = ciphertextchars[i];
-                // Force to uppercase
 
+                // Force to uppercase
                 if(ciphChar >= 'a' && ciphChar <= 'z'){
                     ciphChar += (char)('A' - 'a');
                 }
 
                 // Discard non-alphabetic chars.
                 // This is helpful because it hides word breaks and punctuation.
-
                 else if(ciphChar < 'A' || ciphChar > 'Z'){
                     continue;
                 }
@@ -101,6 +102,9 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
                 decrypted[i] = (char)((ciphChar - keyArr[j] + 26) % 26 + 'A');
 
                 j = (j + 1) % keylength;
+                //cg_accum_add_64 (1, 1, 0, j>=keylength, &j);
+                //cg_count_ceil_64 (1, 0, 1, keylength, &keyIndex);
+                //printf("%d\n", keyIndex);
 
             }
             //printf("%s \n", decrypted);
@@ -111,7 +115,7 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
             for(i = 0; i < numwords; i++){
                 lettercheck = 1;
                 for(j = 0; j < firstwordlength; j++){
-                    if(CL[i][j] != decrypted[j]){
+                    if(DICTIONARY_L[i][j] != decrypted[j]){
                         lettercheck = 0;
                     }
                 }
@@ -122,6 +126,10 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
             }           
             if(found == 1){
                 printf("Found key %s and plaintext %s\n", keyArr, decrypted);
+                for(i = 0; i < keylength; i++){
+                    FOUNDKEY_L[i] = (int64_t)(keyArr[i]);
+                }
+                FOUNDKEY_L[keylength] = (int64_t)'\0';
             }
 
              
@@ -146,6 +154,6 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
 
     *time = t1 - t0;
 
-    //buffered_dma_cpu (OBM2CM, PATH_0, BL, MAP_OBM_stripe (1,"B"), foundkey, 1, keylength + 1);
+    buffered_dma_cpu (OBM2CM, PATH_0, FOUNDKEY_L, MAP_OBM_stripe (1,"B"), foundkey, 1, sizeof(int64_t) * (keylength+1));
 }
 
