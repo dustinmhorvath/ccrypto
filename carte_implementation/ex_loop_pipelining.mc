@@ -146,6 +146,7 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
             i = 0;
             keyArr[keylength - 1]++;
             for(i = keylength - 1; i > 0; i--){
+//                cg_accum_add_64 (-26, keyArr[i] > 'Z', 0, 0, &keyArr[i]);
                 if(keyArr[i] > 'Z'){
                     keyArr[i] -= 26;
                     keyArr[i-1]++;
@@ -155,9 +156,9 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
         }
 
     }
-    
-    
-    
+
+
+
     read_timer (&t1);
 
     *time = t1 - t0;
