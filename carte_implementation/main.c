@@ -85,11 +85,13 @@ void freeShortDictionary (int64_t** wordlengthOnly, int wordcount){
 // Decrypts using map, which returns the decryption key
 // Prints the key and the plaintext
 // Frees all malloc'd resources created in block
-int64_t* executeSubroutine(char** words, char* ciphertextchars, int ciphertextlength, int64_t* foundkey, int wordlength, int keylength, int64_t* tm, int mapnum){
-    int start, end, wordcount, i;
+int64_t* executeSubroutine(char** words, char* ciphertextchars, int ciphertextlength, int wordlength, int keylength, int64_t* tm, int mapnum){
+    int start=0, end=0, wordcount=0, i=0;
     
     // Get a new short dictionary
     int64_t** wordlengthOnly = getShortDictionary(words, wordlength);
+    
+    int64_t* foundkey = Cache_Aligned_Allocate(keylength * sizeof(int64_t));
 
     start = getStart(words, wordlength);
     end = getEnd(words, wordlength);
@@ -114,6 +116,7 @@ int64_t* executeSubroutine(char** words, char* ciphertextchars, int ciphertextle
  
     printf ("MAP completed in %lld clocks.\n", tm);
 
+    free(foundkey);
     freeShortDictionary(wordlengthOnly, wordcount);
     free(ciphertext);
     free(key);
@@ -128,8 +131,6 @@ int main (int argc, char *argv[]) {
     int start, end, wordlength, wordcount, keylength, ciphertextlength;
     char line[25];
     char *ciphertextchars = malloc(sizeof(char)*MAXCIPHERTEXTLENGTH);
-    
-    int64_t* foundkey = Cache_Aligned_Allocate(MAXWORDSIZE * sizeof(int64_t));
 
     // Declare static array, since the size of the dictionary is known
     char** words = malloc(sizeof(char*) * MAXWORDS);
@@ -190,7 +191,7 @@ int main (int argc, char *argv[]) {
         printf("CPU completed in %lld clocks.\n", t1-t0); 
 
         // Decrypt using MAP subroutine
-        executeSubroutine(words, ciphertextchars, ciphertextlength, foundkey, wordlength, keylength, &tm, mapnum);
+        executeSubroutine(words, ciphertextchars, ciphertextlength, wordlength, keylength, &tm, mapnum);
         printf("\n");
     }
 

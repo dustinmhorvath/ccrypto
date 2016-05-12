@@ -19,8 +19,8 @@
 void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int ciphertextlength, int64_t foundkey[], int numwords, int firstwordlength, int keylength, int64_t *time, int mapnum) {
 
 
-    int64_t t0, t1, keyIndex;
-    int i, j, k, cont;
+    int64_t t0, t1;
+    int i=0, j=0, k=0, cont=1, keyIndex=0;
     int notzs, found, lettercheck;
     char decrypted[MAXCIPHERTEXTLENGTH];
     char ciphChar;
@@ -36,7 +36,6 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
 
     buffered_dma_cpu (CM2OBM, PATH_0, DICTIONARY_L, MAP_OBM_stripe (1,"C"), dictionary, 1, (MAXWORDSIZE) * numwords * sizeof(int64_t));
     buffered_dma_cpu (CM2OBM, PATH_0, CIPHERTEXT_L, MAP_OBM_stripe (1,"A"), ciphertext, 1, ciphertextlength * sizeof(int64_t));
-    buffered_dma_cpu (CM2OBM, PATH_0, FOUNDKEY_L, MAP_OBM_stripe (1,"B"), foundkey, 1, (keylength+1) * sizeof(int64_t));
 
     printf("Attempting MAP decryption...\n");
      
@@ -83,9 +82,10 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
         else{
 
             // ~~~~~~~DECRYPT BLOCK~~~~~~~
-            keyIndex = 0;
-            for(i = 0, j = 0; i < ciphertextlength; i++){
+            for(i = 0; i < ciphertextlength; i++){
                 
+                cg_count_ceil_64 (1, 0, i==0, keylength-1, &keyIndex);
+
                 // Read in a ciphertext character
                 ciphChar = ciphertextchars[i];
 
@@ -100,12 +100,11 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
                     continue;
                 }
 
-                decrypted[i] = (char)((ciphChar - keyArr[j] + 26) % 26 + 'A');
+                decrypted[i] = (char)((ciphChar - keyArr[keyIndex] + 26) % 26 + 'A');
 
-                j = (j + 1) % keylength;
-                //cg_accum_add_32 (j, 1, 0, j>=keylength, &j);
-                //cg_count_ceil_64 (1, 0, 1, keylength, &j);
-                //printf("%d\n", j);
+                //keyIndex = (keyIndex + 1) % keylength;
+
+                //printf("%d\n", keyIndex);
 
             }
             //printf("%s \n", decrypted);
