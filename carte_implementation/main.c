@@ -5,6 +5,9 @@
 
 #include "Decrypt.h"
 
+// Use this to control the number of bruteforce cases to attempt, 1-3.
+#define BRUTECASES 2
+
 #define MAXWORDSIZE 16
 #define MAXWORDS 167964
 #define MAXCIPHERTEXTLENGTH 200
@@ -87,7 +90,6 @@ int64_t* executeSubroutine(char** words, char* ciphertextchars, int ciphertextle
 
     // Decrypt on MAP
     subr (&wordlengthOnly[0][0], ciphertext, ciphertextlength, foundkey, wordcount, wordlength, keylength, &tm, mapnum);
-    //free(wordlengthOnly);
  
     char *key = malloc(sizeof(char) * (keylength+1));
     key[keylength] = '\0';
@@ -115,10 +117,10 @@ int main (int argc, char *argv[]) {
     int start, end, wordlength, wordcount, keylength, ciphertextlength;
     char line[25];
     char *ciphertextchars = malloc(sizeof(char)*MAXCIPHERTEXTLENGTH);
-    //int64_t* foundkey = malloc(MAXWORDSIZE * sizeof (int64_t));
+    
     int64_t* foundkey = Cache_Aligned_Allocate(MAXWORDSIZE * sizeof(int64_t));
 
-    // Declare static array, since the size is known
+    // Declare static array, since the size of the dictionary is known
     char** words = malloc(sizeof(char*) * MAXWORDS);
     for(i = 0; i < MAXWORDS; i++){
         words[i] = malloc(sizeof(char) * MAXWORDSIZE);
@@ -132,7 +134,7 @@ int main (int argc, char *argv[]) {
         printf("\n\nStarting.\n\n");
     }
 
-    // Read the dictionary into a string* array.
+    // Read the dictionary into a string* array. Later we'll turn it into smaller int64_t array for the MAP
     i = 0;
     while(!feof(dictionaryFile)){
         fscanf(dictionaryFile,"%s", line);
@@ -142,60 +144,53 @@ int main (int argc, char *argv[]) {
 
     // Close dictionary file
     fclose(dictionaryFile);
-
+    
+    // Seems this can't be allocated and freed sucessively without risk of segfault.
     map_allocate (1);
-    
-    // CASE 1
-    // These arguments are all that make each brute force unique
-    ciphertextchars = "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX\0";
-    ciphertextlength = strlen(ciphertextchars);
-    wordlength = 6; 
-    keylength = 2;
-    
-    // Decrypt using conventional brute-force
-    t0 = clock();
-    brutishDecrypt(ciphertextchars, keylength, wordlength, words, MAXWORDS);
-    t1 = clock();
-    printf("CPU completed in %lld clocks.\n", t1-t0); 
 
-    // Decrypt using MAP subroutine
-    executeSubroutine(words, ciphertextchars, ciphertextlength, foundkey, wordlength, keylength, &tm, mapnum);
-    printf("\n");
-    
+    for(i = 0; i < BRUTECASES; i++){
+        // These arguments are all that make each brute force unique
+        if(i == 0){
+            // CASE 1
+            ciphertextchars = "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX\0";
+            ciphertextlength = strlen(ciphertextchars);
+            wordlength = 6; 
+            keylength = 2;
+        }
+        else if(i == 1){
+            // CASE 2
+            ciphertextchars = "OOPCULNWFRCFQAQJGPNARMEYUODYOUNRGWORQEPVARCEPBBSCEQYEARAJUYGWWYACYWBPRNEJBMDTEAEYCCFJNENSGWAQRTSJTGXNRQRMDGFEEPHSJRGFCFMACCB\0";
+            ciphertextlength = strlen(ciphertextchars);
+            wordlength = 7;
+            keylength = 3;
+        }
+        else if(i == 2){
+            // CASE 3    
+            ciphertextchars = "MTZHZEOQKASVBDOWMWMKMNYIIHVWPEXJA\0";
+            ciphertextlength = strlen(ciphertextchars);
+            wordlength = 10;
+            keylength = 4;
+        }
 
-    // CASE 2
-    ciphertextchars = "OOPCULNWFRCFQAQJGPNARMEYUODYOUNRGWORQEPVARCEPBBSCEQYEARAJUYGWWYACYWBPRNEJBMDTEAEYCCFJNENSGWAQRTSJTGXNRQRMDGFEEPHSJRGFCFMACCB\0";
-    ciphertextlength = strlen(ciphertextchars);
-    wordlength = 7;
-    keylength = 3;
+        // Decrypt using conventional brute-force
+        t0 = clock();
+        brutishDecrypt(ciphertextchars, keylength, wordlength, words, MAXWORDS);
+        t1 = clock();
+        printf("CPU completed in %lld clocks.\n", t1-t0); 
 
-    // Decrypt using conventional brute-force
-    t0 = clock();
-    brutishDecrypt(ciphertextchars, keylength, wordlength, words, MAXWORDS);
-    t1 = clock();
-    printf("CPU completed in %lld clocks.\n", t1-t0); 
-
-    // Decrypt using MAP subroutine
-    executeSubroutine(words, ciphertextchars, ciphertextlength, foundkey, wordlength, keylength, &tm, mapnum);
-    printf("\n");
-
-    // CASE 3    
-    ciphertextchars = "MTZHZEOQKASVBDOWMWMKMNYIIHVWPEXJA\0";
-    ciphertextlength = strlen(ciphertextchars);
-    wordlength = 10;
-    keylength = 4;
-
-    // Decrypt using conventional brute-force
-    t0 = clock();
-    brutishDecrypt(ciphertextchars, keylength, wordlength, words, MAXWORDS);
-    t1 = clock();
-    printf("CPU completed in %lld clocks.\n", t1-t0); 
-
-    // Decrypt using MAP subroutine
-    executeSubroutine(words, ciphertextchars, ciphertextlength, foundkey, wordlength, keylength, &tm, mapnum);
-    printf("\n");
-
+        // Decrypt using MAP subroutine
+        executeSubroutine(words, ciphertextchars, ciphertextlength, foundkey, wordlength, keylength, &tm, mapnum);
+        printf("\n");
+    }
 
     map_free (1);
+   
+    // Why in the world does this memdump?
+    //free(ciphertextchars);
+
+    for(i = 0; i < MAXWORDS; i++){
+        free(words[i]);
+    }
+    free(words);
     exit(0);
 }
