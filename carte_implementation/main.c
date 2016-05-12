@@ -13,9 +13,10 @@
 #define MAXCIPHERTEXTLENGTH 200
 
 
-
+// Prototype for the MAP subroutine
 void subr (int64_t**, int64_t*, int,  int64_t*, int, int, int, int64_t*, int);
 
+// Takes in a full dictionary, and returns the line index on which words start of a specified length
 int getStart(char** dictionary, int wordlength){
     int start = 0;
     int i;
@@ -28,6 +29,7 @@ int getStart(char** dictionary, int wordlength){
     return start;
 }
 
+// Takes in a full dictionary, and returns the line index on which words end of a specified length
 int getEnd(char** dictionary, int wordlength){
     int start = 0;
     int end = 0;
@@ -44,6 +46,8 @@ int getEnd(char** dictionary, int wordlength){
     return end;
 }
 
+// Takes a full dictionary, and returns a char** to a malloc'd, NEW dictionary 
+// containing only words of 'wordlength'
 int64_t** getShortDictionary(char** dictionary, int wordlength){
     int i, j, start, end, wordcount;
     start = getStart(dictionary, wordlength);
@@ -66,6 +70,7 @@ int64_t** getShortDictionary(char** dictionary, int wordlength){
     return wordlengthOnly;
 }
 
+// Helper function for freeing dictionaries created by getShortDictionary
 void freeShortDictionary (int64_t** wordlengthOnly, int wordcount){
     int i;
     for(i = 0; i < wordcount; i++){
@@ -74,6 +79,12 @@ void freeShortDictionary (int64_t** wordlengthOnly, int wordcount){
     free(wordlengthOnly);
 }
 
+// Gets start and end points in dictionary for a certain wordlength
+// Gets a pointer to a new dictionary with only the specified wordlength
+// Creates new int64_t* array containing ciphertext for subroutine
+// Decrypts using map, which returns the decryption key
+// Prints the key and the plaintext
+// Frees all malloc'd resources created in block
 int64_t* executeSubroutine(char** words, char* ciphertextchars, int ciphertextlength, int64_t* foundkey, int wordlength, int keylength, int64_t* tm, int mapnum){
     int start, end, wordcount, i;
     
@@ -185,7 +196,7 @@ int main (int argc, char *argv[]) {
 
     map_free (1);
    
-    // Why in the world does this memdump?
+    // Why in the world does this memdump? It's literally just a char*.
     //free(ciphertextchars);
 
     for(i = 0; i < MAXWORDS; i++){
