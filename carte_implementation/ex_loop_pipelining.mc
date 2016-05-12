@@ -125,7 +125,7 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
                 }
             }           
             if(found == 1){
-                printf("Found key %s and plaintext %s\n", keyArr, decrypted);
+                //printf("Found key %s and plaintext %s\n", keyArr, decrypted);
                 for(i = 0; i < keylength; i++){
                     FOUNDKEY_L[i] = (int64_t)(keyArr[i]);
                 }

@@ -88,7 +88,7 @@ void brutishDecrypt(char *ciphertext, int keylength, int firstwordlength, char *
     int i = 0;
     char *keyArr = malloc(sizeof(char)*(keylength+1)); // Add one for null char
 
-    printf("Attempting decryption...\n");
+    printf("Attempting CPU decryption...\n");
 
 
 
@@ -109,7 +109,10 @@ void brutishDecrypt(char *ciphertext, int keylength, int firstwordlength, char *
         plaintext = decrypt(substring, firstwordlength, keyArr, keylength);
 
         if(bruteSearch(plaintext, dictionary, numwords) == 1){
-            printf("Found key %s and plaintext %s\n", &keyArr[0], plaintext);
+            free(plaintext);
+            plaintext = decrypt(ciphertext, strlen(ciphertext), keyArr, keylength);
+
+            printf("Decrypt::brutishDecrypt found key '%s' and plaintext %s\n", &keyArr[0], plaintext);
         }
 
 

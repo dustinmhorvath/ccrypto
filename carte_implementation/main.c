@@ -92,16 +92,14 @@ int64_t* executeSubroutine(char** words, char* ciphertextchars, int ciphertextle
     char *key = malloc(sizeof(char) * (keylength+1));
     key[keylength] = '\0';
 
-    printf("Subroutine returned key '");
+    printf("MAP subroutine found key '");
     for(i = 0; i < keylength; i++){
         printf("%c", (char)(foundkey[i]) );
         key[i] = (char)foundkey[i];
     } 
-    printf("'\n");
-
-    printf("%s \n", decrypt( ciphertextchars, ciphertextlength, key, keylength ));
+    printf("' and plaintext %s \n", decrypt( ciphertextchars, ciphertextlength, key, keylength ));
  
-    printf ("%lld clocks\n", tm);
+    printf ("MAP completed in %lld clocks.\n", tm);
 
     //freeShortDictionary(wordlengthOnly, wordcount);
     free(ciphertext);
@@ -130,6 +128,9 @@ int main (int argc, char *argv[]) {
         fprintf (stderr, "failed to open file 'dictionary.txt'\n");
         exit (1);
     }
+    else{
+        printf("\n\nStarting.\n\n");
+    }
 
     // Read the dictionary into a string* array.
     i = 0;
@@ -145,7 +146,7 @@ int main (int argc, char *argv[]) {
     map_allocate (1);
     
     // CASE 1
-    // These arguments are all thta make each brute force unique
+    // These arguments are all that make each brute force unique
     ciphertextchars = "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX\0";
     ciphertextlength = strlen(ciphertextchars);
     wordlength = 6; 
@@ -155,10 +156,11 @@ int main (int argc, char *argv[]) {
     t0 = clock();
     brutishDecrypt(ciphertextchars, keylength, wordlength, words, MAXWORDS);
     t1 = clock();
-    printf("%d clocks\n", t1-t0); 
+    printf("CPU completed in %lld clocks.\n", t1-t0); 
 
     // Decrypt using MAP subroutine
     executeSubroutine(words, ciphertextchars, ciphertextlength, foundkey, wordlength, keylength, &tm, mapnum);
+    printf("\n");
     
 
     // CASE 2
@@ -171,10 +173,11 @@ int main (int argc, char *argv[]) {
     t0 = clock();
     brutishDecrypt(ciphertextchars, keylength, wordlength, words, MAXWORDS);
     t1 = clock();
-    printf("%lld clocks\n", t1-t0); 
+    printf("CPU completed in %lld clocks.\n", t1-t0); 
 
     // Decrypt using MAP subroutine
     executeSubroutine(words, ciphertextchars, ciphertextlength, foundkey, wordlength, keylength, &tm, mapnum);
+    printf("\n");
 
     // CASE 3    
     ciphertextchars = "MTZHZEOQKASVBDOWMWMKMNYIIHVWPEXJA\0";
@@ -186,10 +189,11 @@ int main (int argc, char *argv[]) {
     t0 = clock();
     brutishDecrypt(ciphertextchars, keylength, wordlength, words, MAXWORDS);
     t1 = clock();
-    printf("%lld clocks\n", t1-t0); 
+    printf("CPU completed in %lld clocks.\n", t1-t0); 
 
     // Decrypt using MAP subroutine
     executeSubroutine(words, ciphertextchars, ciphertextlength, foundkey, wordlength, keylength, &tm, mapnum);
+    printf("\n");
 
 
     map_free (1);
