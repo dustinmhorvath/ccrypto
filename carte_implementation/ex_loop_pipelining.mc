@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define EXITONFOUND 1
 
 #define MAXWORDS 167964
 #define MAXWORDSIZE 16
@@ -102,9 +103,9 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
                 decrypted[i] = (char)((ciphChar - keyArr[j] + 26) % 26 + 'A');
 
                 j = (j + 1) % keylength;
-                //cg_accum_add_64 (1, 1, 0, j>=keylength, &j);
-                //cg_count_ceil_64 (1, 0, 1, keylength, &keyIndex);
-                //printf("%d\n", keyIndex);
+                //cg_accum_add_32 (j, 1, 0, j>=keylength, &j);
+                //cg_count_ceil_64 (1, 0, 1, keylength, &j);
+                //printf("%d\n", j);
 
             }
             //printf("%s \n", decrypted);
@@ -112,8 +113,10 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
 
             // ~~~~~~~ CHECK DICTIONARY ~~~~~~~
             found = 0;
+            // For each word
             for(i = 0; i < numwords; i++){
                 lettercheck = 1;
+                // For each letter, check if any not equal
                 for(j = 0; j < firstwordlength; j++){
                     if(DICTIONARY_L[i][j] != decrypted[j]){
                         lettercheck = 0;
@@ -123,13 +126,19 @@ void subr (int64_t dictionary[MAXWORDS][MAXWORDSIZE], int64_t ciphertext[], int 
                     found = 1;
                     break;
                 }
-            }           
+            }
+            // If all letters of a word are equal, store the key back into FOUNDKEY_L. It would be
+            // better to have a key-queue for multiple possible matches, but it's known in this case
+            // that there is only one match in the dictionary.
             if(found == 1){
                 //printf("Found key %s and plaintext %s\n", keyArr, decrypted);
                 for(i = 0; i < keylength; i++){
                     FOUNDKEY_L[i] = (int64_t)(keyArr[i]);
                 }
                 FOUNDKEY_L[keylength] = (int64_t)'\0';
+                if(EXITONFOUND == 1){
+                    cont = 0;
+                }
             }
 
              

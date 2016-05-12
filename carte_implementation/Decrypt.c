@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 
+#define EXITONFOUND 1
 
 #define MAXWORDS 167964
 #define MAXWORDSIZE 20
 
-
+// Return 1 if char* is all Z's. Otherwise return 0.
 int isZs(char *key, int keylength){
     int notzs = 1;
     int i = 0;
@@ -17,6 +18,8 @@ int isZs(char *key, int keylength){
     return notzs;
 }
 
+// Pass a char* by reference. It will increase the last char by 1, and 
+// carry over anything >Z
 void keyInc(char *key, int keylength){ 
     int i = 0;
 
@@ -29,6 +32,7 @@ void keyInc(char *key, int keylength){
     }
 }
 
+// Search a dictionary for a char* tofind. Returns 1 on found, 0 if not.
 int bruteSearch(char *tofind, char** dictionary, int numwords){
     int found = 0;
     int i = 0;
@@ -92,7 +96,7 @@ void brutishDecrypt(char *ciphertext, int keylength, int firstwordlength, char *
 
 
 
-    // Start with all A's
+    // Start with all A's as our key.
     for(i = 0; i < keylength; i++){
         keyArr[i] = 'A';
     }
@@ -101,24 +105,33 @@ void brutishDecrypt(char *ciphertext, int keylength, int firstwordlength, char *
     //start = std::clock();
     while(isZs(keyArr, keylength) == 0){
 
-        // Decrypt with the firstwordlength of chars with the current key
+        // Decrypt with the firstwordlength of chars with the current key.
         char substring[MAXWORDSIZE];
         memcpy( substring, &ciphertext[0], firstwordlength );
         substring[firstwordlength] = '\0';
         
         plaintext = decrypt(substring, firstwordlength, keyArr, keylength);
 
+        // Check if plaintext substring is in the dictionary
         if(bruteSearch(plaintext, dictionary, numwords) == 1){
+            // Free before decrypt gives us a new pointer
             free(plaintext);
             plaintext = decrypt(ciphertext, strlen(ciphertext), keyArr, keylength);
 
             printf("Decrypt::brutishDecrypt found key '%s' and plaintext %s\n", &keyArr[0], plaintext);
+
+            // This free is part of the break;
+            if(EXITONFOUND == 1){
+                free(plaintext);
+                break;
+            }
         }
 
 
         // Increment the key array
         keyInc(&keyArr[0], keylength);
-        
+       
+        // Every decrypt gives us a new plaintext pointer that we must free.
         free(plaintext);
     }
 
