@@ -87,7 +87,7 @@ int64_t* executeSubroutine(char** words, char* ciphertextchars, int ciphertextle
 
     // Decrypt on MAP
     subr (&wordlengthOnly[0][0], ciphertext, ciphertextlength, foundkey, wordcount, wordlength, keylength, &tm, mapnum);
-    free(wordlengthOnly);
+    //free(wordlengthOnly);
  
     char *key = malloc(sizeof(char) * (keylength+1));
     key[keylength] = '\0';
@@ -101,7 +101,7 @@ int64_t* executeSubroutine(char** words, char* ciphertextchars, int ciphertextle
  
     printf ("MAP completed in %lld clocks.\n", tm);
 
-    //freeShortDictionary(wordlengthOnly, wordcount);
+    freeShortDictionary(wordlengthOnly, wordcount);
     free(ciphertext);
     free(key);
     return tm;
